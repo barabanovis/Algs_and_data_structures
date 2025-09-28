@@ -7,7 +7,7 @@ project("lab1_Aisd" CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_executable("lab1_Aisd" "main.cpp")
+add_executable("lab1_Aisd" "main.cpp" "Monotone_Image.h" "Monotone_Image.cpp")
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang" OR
    CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR
