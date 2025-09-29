@@ -1,6 +1,7 @@
 #include "Monotone_Image.h"
 #include <random>
 #include <ctime>
+#include <limits>
 
 using namespace std;
 
@@ -12,7 +13,7 @@ Image<T>::Image(const size_t rows, const size_t columns, const bool random_fill)
 	_matrix = new T[rows * columns];
 	
 	if (random_fill) {
-		uniform_real_distribution 
+		
 
 		for (auto u : *_matrix) {
 			u = ;
@@ -106,4 +107,56 @@ bool Image<T>::operator==(const Image& rhs) const {
 template <typename T>
 bool Image<T>::operator!=(const Image& rhs) const{
 	return !(*this == rhs);
+}
+
+template <typename T>
+Image<T>& Image<T>::operator+=(const Image& rhs) {
+
+}
+
+template <typename T>
+Image<T> Image<T>::operator+(const Image& rhs) const{
+	return (*this) += rhs;
+}
+
+template <typename T>
+Image<T>& Image<T>::operator-=(const Image& rhs){
+}
+
+template <typename T>
+Image<T> Image<T>::operator-(const Image& rhs) const {
+	return (*this) -= rhs;
+}
+
+
+template <typename T>
+Image<T>& Image<T>::operator*=(const T rhs) {
+	for (auto& u : *_matrix) {
+		u = u * rhs;
+	}
+	return *this;
+}
+
+template <typename T>
+Image<T> Image<T>::operator*(const T rhs) const {
+	return (*this) *= rhs;
+}
+
+template <typename T>
+float Image<T>::fill_coefficient() const {
+	float res = 0;
+	for (auto u : *_matrix) {
+		res += (u / (get_rows() * get_columns() * numeric_limits<T>::max()));
+	}
+	return res;
+}
+
+template <typename T>
+Image<T> Image<T>::operator!() {
+	Image<T> result(*this);
+	T* res_matrix = result.get_matrix();
+	for (auto& u : *res_matrix) {
+		u = numeric_limits<T>::max() - u;
+	}
+	return result;
 }

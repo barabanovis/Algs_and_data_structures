@@ -28,8 +28,21 @@ public:
 	T& operator()(const int row, const int column);
 	const T& operator()(const int row, const int column) const;
 
-	bool operator==(const Image& rhs) const;
-	bool operator!=(const Image& rhs) const;
+	std::bool operator==(const Image& rhs) const;
+	std::bool operator!=(const Image& rhs) const;
+
+	Image& operator+=(const Image& rhs);
+	Image operator+(const Image& rhs) const;
+
+	Image& operator-=(const Image& rhs);
+	Image operator-(const Image& rhs) const;
+
+	Image& operator*=(const T rhs);
+	Image operator*(const T rhs) const;
+
+	Image operator!();
+
+	std::float fill_coefficient() const;
 };
 
 #endif
