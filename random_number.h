@@ -1,4 +1,4 @@
-#ifndef RANDOM_NUMBER_H
+﻿#ifndef RANDOM_NUMBER_H
 #define RANDOM_NUMBER_H
 
 bool random_bool();

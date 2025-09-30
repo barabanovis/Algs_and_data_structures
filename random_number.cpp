@@ -1,4 +1,4 @@
-#include "random_number.h"
+﻿#include "random_number.h"
 #include <iostream>
 #include <random>
 #include <ctime>
@@ -6,30 +6,25 @@
 
 using namespace std;
 
-bool random_bool(void) {
-	mt19937 gen(time(0));
-	uniform_int_distribution<> distrib(0, 1);
 
-	return (bool)distrib(gen);
+std::mt19937 gen(time(NULL));
+std::uniform_int_distribution<> bool_distrib(0, 1);
+std::uniform_real_distribution<> float_distrib(0, numeric_limits<float>::max());
+std::uniform_int_distribution<> char_distrib(0, 255);
+std::uniform_int_distribution<> short_distrib(0, numeric_limits<short>::max());
+
+bool random_bool(void) {
+	return (bool)bool_distrib(gen);
 }
 
 float random_float(void) {
-	mt19937 gen(time(0));
-	uniform_real_distribution<> distrib(0, numeric_limits<float>::max());
-
-	return (float)distrib(gen);
+	return (float)float_distrib(gen);
 }
 
 char random_char(void) {
-	mt19937 gen(time(0));
-	uniform_int_distribution<> distrib(0, 255);
-
-	return (char)distrib(gen);
+	return (char)char_distrib(gen);
 }
 
 short random_short(void) {
-	mt19937 gen(time(0));
-	uniform_int_distribution<> distrib(0, numeric_limits<short>::max());
-
-	return (char)distrib(gen);
+	return (short)short_distrib(gen);
 }
