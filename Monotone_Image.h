@@ -1,4 +1,4 @@
-#ifndef MONOTONE_IMAGE_H
+п»ї#ifndef MONOTONE_IMAGE_H
 #define MONOTONE_IMAGE_H
 
 #include <iostream>
@@ -11,11 +11,11 @@ private:
 	std::size_t _columns;
 	T* _matrix;
 
-	static double eps = 1e-3;
+	static double _eps = 1e-6;
 
 	T* get_matrix() const;
 public:
-	Image(const size_t rows, const size_t columns, const bool random_fill); // Создаёт нулевую матрицу заданной размерности
+	Image(const size_t rows, const size_t columns, const bool random_fill); // РЎРѕР·РґР°С‘С‚ РЅСѓР»РµРІСѓСЋ РјР°С‚СЂРёС†Сѓ Р·Р°РґР°РЅРЅРѕР№ СЂР°Р·РјРµСЂРЅРѕСЃС‚Рё
 	Image(const Image& cpy);
 
 	~Image();
@@ -28,8 +28,8 @@ public:
 	T& operator()(const int row, const int column);
 	const T& operator()(const int row, const int column) const;
 
-	std::bool operator==(const Image& rhs) const;
-	std::bool operator!=(const Image& rhs) const;
+	bool operator==(const Image& rhs) const;
+	bool operator!=(const Image& rhs) const;
 
 	Image& operator+=(const Image& rhs);
 	Image operator+(const Image& rhs) const;
@@ -42,8 +42,11 @@ public:
 
 	Image operator!();
 
-	std::float fill_coefficient() const;
+	float fill_coefficient() const;
 };
+
+template <typename T>
+std::ostream& operator<<(std::ostream os, const Image<T>& im);
 
 #endif
 

@@ -160,3 +160,30 @@ Image<T> Image<T>::operator!() {
 	}
 	return result;
 }
+
+template <typename T>
+std::ostream& operator<<(std::ostream os, const Image<T>& im) {
+
+	// first row
+	os << "? ";
+	for (size_t j = 0; j < im..get_columns(); ++j) {
+		os << im(i, j) << " ";
+	}
+	os << " ?\n"
+
+		//rows 2->(n-1)
+		for (size_t i = 1; i < im.get_rows() - 1; ++i) {
+			os << "? "
+				for (size_t j = 0; j < im.get_columns(); ++j) {
+					os << im(i, j) << " ";
+				}
+			os << " ?\n"
+		}
+	//last row
+	os << "? ";
+	for (size_t j = 0; j < im.get_rows(); ++j) {
+		os << im(i, j) << " ";
+	}
+	os << " ?\n";
+	return os;
+}
