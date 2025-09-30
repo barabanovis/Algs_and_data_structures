@@ -1,30 +1,34 @@
-#include "Monotone_Image.h"
+﻿#include "Monotone_Image.h"
+#include "random_number"
 #include <random>
 #include <ctime>
 #include <limits>
 
 using namespace std;
 
-template <typename T>
-Image<T>::Image(const size_t rows, const size_t columns, const bool random_fill) {
-	std::_rows = rows;
-	std::_columns = columns;
 
-	_matrix = new T[rows * columns];
-	
+// Специализации конструктора для каждого из типов данных
+//bool
+template<>
+Image<bool>::Image(const size_t rows, const size_t columns, const bool random_fill) {
+	_rows = rows;
+	_columns = columns;
+
+	_matrix = new bool[rows * columns];
+
 	if (random_fill) {
-		
-
 		for (auto u : *_matrix) {
+			
 			u = ;
 		}
 	}
 	else {
 		for (auto u : *_matrix) {
-			u = 0;
+			u = false;
 		}
 	}
 }
+
 
 template <typename T>
 T* Image<T>::get_matrix() const {
@@ -111,7 +115,26 @@ bool Image<T>::operator!=(const Image& rhs) const{
 
 template <typename T>
 Image<T>& Image<T>::operator+=(const Image& rhs) {
+	size_t res_rows = max(this->get_rows(), rhs.get_rows());
+	size_t res_columns = max(this->get_columns(), rhs.get_columns());
+	Image<T> result(res_rows, res_columns,false);
 
+	size_t end_row = min(this->get_rows(), rhs.get_rows());
+	size_t end_column = min(this->get_columns(), rhs.get_columns());
+
+	for (size_t i = 0; i < res_rows; ++i) {
+		for (size_t j = 0; j < res_columns; ++j) {
+			result(i, j) = 0;
+			
+			if (i < this->get_rows() && j < this->get_columns()) {
+				result(i, j) += *this(i, j);
+			}
+
+			if (i < rhs.get_rows() && j < rhs.get_columns()) {
+				result(i, j) += rhs(i, j);
+			}
+		}
+	}
 }
 
 template <typename T>
@@ -121,13 +144,32 @@ Image<T> Image<T>::operator+(const Image& rhs) const{
 
 template <typename T>
 Image<T>& Image<T>::operator-=(const Image& rhs){
+	size_t res_rows = max(this->get_rows(), rhs.get_rows());
+	size_t res_columns = max(this->get_columns(), rhs.get_columns());
+	Image<T> result(res_rows, res_columns, false);
+
+	size_t end_row = min(this->get_rows(), rhs.get_rows());
+	size_t end_column = min(this->get_columns(), rhs.get_columns());
+
+	for (size_t i = 0; i < res_rows; ++i) {
+		for (size_t j = 0; j < res_columns; ++j) {
+			result(i, j) = 0;
+
+			if (i < this->get_rows() && j < this->get_columns()) {
+				result(i, j) += *this(i, j);
+			}
+
+			if (i < rhs.get_rows() && j < rhs.get_columns()) {
+				result(i, j) -= rhs(i, j);
+			}
+		}
+	}
 }
 
 template <typename T>
 Image<T> Image<T>::operator-(const Image& rhs) const {
 	return (*this) -= rhs;
 }
-
 
 template <typename T>
 Image<T>& Image<T>::operator*=(const T rhs) {
@@ -165,25 +207,25 @@ template <typename T>
 std::ostream& operator<<(std::ostream os, const Image<T>& im) {
 
 	// first row
-	os << "? ";
+	os << "┏ ";
 	for (size_t j = 0; j < im..get_columns(); ++j) {
 		os << im(i, j) << " ";
 	}
-	os << " ?\n"
+	os << " ┓\n"
 
 		//rows 2->(n-1)
 		for (size_t i = 1; i < im.get_rows() - 1; ++i) {
-			os << "? "
+			os << "┃ "
 				for (size_t j = 0; j < im.get_columns(); ++j) {
 					os << im(i, j) << " ";
 				}
-			os << " ?\n"
+			os << " ┃\n"
 		}
 	//last row
-	os << "? ";
+	os << "┗ ";
 	for (size_t j = 0; j < im.get_rows(); ++j) {
 		os << im(i, j) << " ";
 	}
-	os << " ?\n";
+	os << " ┛\n";
 	return os;
 }
