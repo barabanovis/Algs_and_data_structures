@@ -228,17 +228,15 @@ Image<T>& Image<T>::operator+=(const Image& rhs) {
 
 	for (size_t i = 0; i < res_rows; ++i) {
 		for (size_t j = 0; j < res_columns; ++j) {
-			T tmp = 0;
+			result(i, j) = 0;
 
 			if (i < this->get_rows() && j < this->get_columns()) {
-				tmp = (*this)(i, j);
+				result(i, j) += (*this)(i, j);
 			}
 
 			if (i < rhs.get_rows() && j < rhs.get_columns()) {
-				tmp += rhs(i, j);
+				result(i, j) += rhs(i, j);
 			}
-
-			result(i, j) = tmp;
 		}
 	}
 	*this = result;

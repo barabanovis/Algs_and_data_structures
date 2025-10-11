@@ -4,6 +4,6 @@
 using namespace std;
 
 void ios_start() {
-	system("chcp 65001");
+	system("chcp 65001 > nul");
 	std::ios_base::sync_with_stdio(false);
 }

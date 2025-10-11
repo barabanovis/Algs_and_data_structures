@@ -9,9 +9,9 @@ using namespace std;
 
 std::mt19937 gen(time(NULL));
 std::uniform_int_distribution<> bool_distrib(0, 1);
-std::uniform_real_distribution<> float_distrib(0, numeric_limits<float>::max());
-std::uniform_int_distribution<> char_distrib(0, 255);
-std::uniform_int_distribution<> short_distrib(0, numeric_limits<short>::max());
+std::uniform_real_distribution<> float_distrib(0, 255);
+std::uniform_int_distribution<> char_distrib(0, 127);
+std::uniform_int_distribution<> short_distrib(0, 255);
 
 bool random_bool(void) {
 	return (bool)bool_distrib(gen);

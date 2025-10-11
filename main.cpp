@@ -6,8 +6,12 @@ using namespace std;
 
 int main() {
 	ios_start();
-	Image<bool> imag1(9, 9, true);
+	Image<char> imag1(9, 9, true);
+	Image<char> imag2(9, 9, true);
 	cout << imag1;
-	cout << !imag1;
+	cout << "____________________\n";
+	cout << imag2;
+	cout << "____________________\n";
+	cout << (imag1 + imag2);
 	return 0;
 }
