@@ -4,6 +4,8 @@
 #include <iostream>
 #include "random_number.h"
 #include <limits>
+#include "moduled_operations.h"
+
 
 template <typename T>
 class Image {
@@ -19,7 +21,7 @@ public:
 	Image(const size_t rows, const size_t columns, const bool random_fill); // Создаёт нулевую матрицу заданной размерности
 	Image(const Image& cpy);
 
-	~Image(void);
+	~Image(void) = default;
 	
 	size_t get_rows() const;
 	size_t get_columns() const;
@@ -33,16 +35,16 @@ public:
 	bool operator!=(const Image& rhs) const;
 
 	Image<T>& operator+=(const Image& rhs);
-	Image<T> operator+(const Image& rhs);
+	Image<T> operator+(const Image& rhs) const;
 
 	Image<T>& operator-=(const Image& rhs);
-	Image<T> operator-(const Image& rhs);
+	Image<T> operator-(const Image& rhs) const;
 
 	Image<T>& operator*=(const T rhs);
-	Image<T> operator*(const T rhs);
+	Image<T> operator*(const T rhs) const;
 
 	
-	Image<T> operator!();
+	Image<T> operator!() const;
 
 	float fill_coefficient() const;
 };
@@ -174,14 +176,6 @@ Image<T>::Image(const Image& cpy) :_rows(cpy.get_rows()), _columns(cpy.get_colum
 	}
 }
 
-template <typename T>
-Image<T>::~Image(void) {
-	if (_matrix) {
-		delete[] _matrix;
-	}
-	_matrix = nullptr;
-}
-
 std::size_t max(const std::size_t a, const std::size_t b) {
 	if (a > b) {
 		return a;
@@ -235,7 +229,7 @@ Image<T>& Image<T>::operator+=(const Image& rhs) {
 			}
 
 			if (i < rhs.get_rows() && j < rhs.get_columns()) {
-				tmp += rhs(i, j);
+				tmp = addit_mod(tmp, rhs(i, j));
 			}
 
 			result(i, j) = tmp;
@@ -246,8 +240,10 @@ Image<T>& Image<T>::operator+=(const Image& rhs) {
 }
 
 template <typename T>
-Image<T> Image<T>::operator+(const Image& rhs) {
-	return (*this) += rhs;
+Image<T> Image<T>::operator+(const Image<T>& rhs) const {
+	Image<T> result = (*this);
+	result += rhs;
+	return result;
 }
 
 
@@ -263,15 +259,16 @@ Image<T>& Image<T>::operator-=(const Image& rhs) {
 
 	for (size_t i = 0; i < res_rows; ++i) {
 		for (size_t j = 0; j < res_columns; ++j) {
-			result(i, j) = 0;
+			T tmp = 0;
 
 			if (i < this->get_rows() && j < this->get_columns()) {
-				result(i, j) += (*this)(i, j);
+				tmp += (*this)(i, j);
 			}
 
 			if (i < rhs.get_rows() && j < rhs.get_columns()) {
-				result(i, j) -= rhs(i, j);
+				tmp = substr_mod(tmp, rhs(i, j));
 			}
+			result(i, j) = tmp;
 		}
 	}
 	*this = result;
@@ -279,21 +276,30 @@ Image<T>& Image<T>::operator-=(const Image& rhs) {
 }
 
 template <typename T>
-Image<T> Image<T>::operator-(const Image& rhs) {
-	return (*this) -= rhs;
+Image<T> Image<T>::operator-(const Image& rhs) const{
+	Image<T> result = (*this);
+	result -= rhs;
+	return result;
 }
 
 template <typename T>
 Image<T>& Image<T>::operator*=(const T rhs) {
 	for (size_t i = 0; i < _columns * _rows; ++i) {
-		_matrix[i] += rhs;
+		_matrix[i] = mult_mod(_matrix[i], rhs);
 	}
 	return *this;
 }
 
 template <typename T>
-Image<T> Image<T>::operator*(const T rhs) {
-	return (*this) *= rhs;
+Image<T> Image<T>::operator*(const T rhs) const {
+	Image<T> result = (*this);
+	result *= rhs;
+	return result;
+}
+
+template <typename T>
+Image<T> operator*(const T lhs, Image<T>& image) {
+	return image *= lhs;
 }
 
 template <typename T>
@@ -306,31 +312,26 @@ float Image<T>::fill_coefficient() const {
 }
 
 template <typename T>
-Image<T> Image<T>::operator!() {
+T inverse(const T x) {
+	return (255 - x);
+}
+
+template <>
+bool inverse(const bool x) {
+	return !x;
+}
+
+template <>
+char inverse(const char x) {
+	return (128 - x);
+}
+
+template <typename T>
+Image<T> Image<T>::operator!() const{
 	Image<T> result(*this);
 	T* res_matrix = result.get_matrix();
 	for (size_t i = 0; i < _rows * _columns; ++i) {
-		res_matrix[i] = 255 - _matrix[i];
-	}
-	return result;
-}
-
-template <>
-Image<bool> Image<bool>::operator!() {
-	Image<bool> result(*this);
-	bool* res_matrix = result.get_matrix();
-	for (size_t i = 0; i < _rows * _columns; ++i) {
-		res_matrix[i] = !_matrix[i];
-	}
-	return result;
-}
-
-template <>
-Image<char> Image<char>::operator!() {
-	Image<char> result(*this);
-	char* res_matrix = result.get_matrix();
-	for (size_t i = 0; i < _rows * _columns; ++i) {
-		res_matrix[i] = 128 - _matrix[i];
+		res_matrix[i] = inverse(res_matrix[i]);
 	}
 	return result;
 }
