@@ -108,12 +108,34 @@ int main() {
 		cout << 5 * imag9;
 		cout << "_________________\n";
 	}
+
+	//Поэлементное умножение матриц
+	{
+		Image<short> imag11(5, 5, true);
+		Image<short> imag12(5, 5, true);
+		cout << "imag11\n" << imag11;
+		cout << "_________________\n";
+		cout << "imag12\n" << imag12;
+		cout << "_________________\n";
+		cout << imag11 * imag12;
+		cout << "_________________\n";
+	}
+
 	//Инверсия матрицы
 	{
 		Image<char> imag10(6, 6, true);
 		cout << "imag10\n" << imag10;
 		cout << "_________________\n";
 		cout << "!imag10\n" << !imag10;
+		cout << "_________________\n";
+	}
+
+	//Коэффициент заполнения матрицы
+	{
+		Image<float> imag13(7, 7, true);
+		cout << "imag13\n" << imag13;
+		cout << "_________________\n";
+		cout << "imag13: fill_coefficient = " << imag13.fill_coefficient() << '\n';
 		cout << "_________________\n";
 	}
 

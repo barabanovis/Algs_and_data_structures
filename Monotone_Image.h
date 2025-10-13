@@ -3,11 +3,17 @@
 
 #include <iostream>
 #include "random_number.h"
-#include <limits>
 #include "moduled_operations.h"
 
+template <typename T>
+concept NumericType = std::same_as<T, short> ||
+	std::same_as<T, float> ||
+	std::same_as<T, bool> ||
+	std::same_as<T, char> ||
+	std::same_as<T, int>;
 
-template <typename im_T>
+
+template <NumericType im_T>
 class Image {
 private:
 	std::size_t _rows;
@@ -31,28 +37,31 @@ public:
 	im_T& operator()(const int row, const int column);
 	const im_T operator()(const int row, const int column) const;
 
-	bool operator==(const Image& rhs) const;
-	bool operator!=(const Image& rhs) const;
+	bool operator==(const Image<im_T>& rhs) const;
+	bool operator!=(const Image<im_T>& rhs) const;
 
-	Image<im_T>& operator+=(const Image& rhs);
-	Image<im_T> operator+(const Image& rhs) const;
+	Image<im_T>& operator+=(const Image<im_T>& rhs);
+	Image<im_T> operator+(const Image<im_T>& rhs) const;
 
-	Image<im_T>& operator-=(const Image& rhs);
+	Image<im_T>& operator-=(const Image<im_T>& rhs);
 	Image<im_T> operator-(const Image& rhs) const;
 
-	template <typename num_T>
+	template <NumericType num_T>
 	Image<im_T>& operator*=(const num_T rhs);
 
-	template <typename num_T>
+	template <NumericType num_T>
 	Image<im_T> operator*(const num_T rhs) const;
 
+	Image<im_T> operator*=(const Image<im_T>& rhs);
+	Image<im_T> operator*(const Image<im_T>& rhs) const;
 	
 	Image<im_T> operator!() const;
 
 	float fill_coefficient() const;
 };
 
-template <typename im_T>
+
+template <NumericType im_T>
 const double Image<im_T>::_eps = 1e-6;
 
 // Специализации конструктора для каждого из типов данных
@@ -132,22 +141,22 @@ Image<short>::Image(const size_t rows, const size_t columns, const bool random_f
 	}
 }
 
-template <typename im_T>
+template <NumericType im_T>
 im_T* Image<im_T>::get_matrix() const {
 	return _matrix;
 }
 
-template <typename im_T>
+template <NumericType im_T>
 size_t Image<im_T>::get_columns() const {
 	return _columns;
 }
 
-template <typename im_T>
+template <NumericType im_T>
 size_t Image<im_T>::get_rows() const {
 	return _rows;
 }
 
-template <typename im_T>
+template <NumericType im_T>
 im_T& Image<im_T>::operator()(const int row, const int column) {
 	if (row >= _rows || row < 0) {
 		throw std::out_of_range("Invalid row index!");
@@ -158,7 +167,7 @@ im_T& Image<im_T>::operator()(const int row, const int column) {
 	return _matrix[row * _columns + column];
 }
 
-template <typename im_T>
+template <NumericType im_T>
 const im_T Image<im_T>::operator()(const int row, const int column) const {
 	if (row >= _rows || row < 0) {
 		throw std::out_of_range("Invalid row index!");
@@ -169,7 +178,7 @@ const im_T Image<im_T>::operator()(const int row, const int column) const {
 	return _matrix[row * _columns + column];
 }
 
-template <typename im_T>
+template <NumericType im_T>
 Image<im_T>::Image(const Image& cpy) :_rows(cpy.get_rows()), _columns(cpy.get_columns()) {
 	im_T* cpy_matrix = cpy.get_matrix();
 
@@ -193,8 +202,8 @@ std::size_t min(const std::size_t a, const std::size_t b) {
 	return b;
 }
 
-template <typename im_T>
-bool Image<im_T>::operator==(const Image& rhs) const {
+template <NumericType im_T>
+bool Image<im_T>::operator==(const Image<im_T>& rhs) const {
 	if (_rows != rhs.get_rows()) {
 		throw std::invalid_argument("Count of rows not equal!");
 	}
@@ -212,13 +221,13 @@ bool Image<im_T>::operator==(const Image& rhs) const {
 	return true;
 }
 
-template <typename im_T>
-bool Image<im_T>::operator!=(const Image& rhs) const {
+template <NumericType im_T>
+bool Image<im_T>::operator!=(const Image<im_T>& rhs) const {
 	return !(*this == rhs);
 }
 
-template <typename im_T>
-Image<im_T>& Image<im_T>::operator+=(const Image& rhs) {
+template <NumericType im_T>
+Image<im_T>& Image<im_T>::operator+=(const Image<im_T>& rhs) {
 	size_t res_rows = max(this->get_rows(), rhs.get_rows());
 	size_t res_columns = max(this->get_columns(), rhs.get_columns());
 	Image<im_T> result(res_rows, res_columns, false);
@@ -242,7 +251,7 @@ Image<im_T>& Image<im_T>::operator+=(const Image& rhs) {
 	return *this;
 }
 
-template <typename im_T>
+template <NumericType im_T>
 Image<im_T> Image<im_T>::operator+(const Image<im_T>& rhs) const {
 	Image<im_T> result = (*this);
 	result += rhs;
@@ -251,8 +260,8 @@ Image<im_T> Image<im_T>::operator+(const Image<im_T>& rhs) const {
 
 
 
-template <typename im_T>
-Image<im_T>& Image<im_T>::operator-=(const Image& rhs) {
+template <NumericType im_T>
+Image<im_T>& Image<im_T>::operator-=(const Image<im_T>& rhs) {
 	size_t res_rows = max(this->get_rows(), rhs.get_rows());
 	size_t res_columns = max(this->get_columns(), rhs.get_columns());
 	Image<im_T> result(res_rows, res_columns, false);
@@ -278,15 +287,15 @@ Image<im_T>& Image<im_T>::operator-=(const Image& rhs) {
 	return *this;
 }
 
-template <typename im_T>
-Image<im_T> Image<im_T>::operator-(const Image& rhs) const{
+template <NumericType im_T>
+Image<im_T> Image<im_T>::operator-(const Image<im_T>& rhs) const{
 	Image<im_T> result = (*this);
 	result -= rhs;
 	return result;
 }
 
-template <typename im_T>
-template <typename num_T>
+template <NumericType im_T>
+template <NumericType num_T> 
 Image<im_T>& Image<im_T>::operator*=(const num_T rhs) {
 	for (size_t i = 0; i < _columns * _rows; ++i) {
 		_matrix[i] = mult_mod(_matrix[i], (im_T)rhs);
@@ -294,28 +303,62 @@ Image<im_T>& Image<im_T>::operator*=(const num_T rhs) {
 	return *this;
 }
 
-template <typename im_T>
-template <typename num_T>
+template <NumericType im_T>
+template <NumericType num_T>
 Image<im_T> Image<im_T>::operator*(const num_T rhs) const {
 	Image<im_T> result = (*this);
 	result *= (im_T)rhs;
 	return result;
 }
 
-template <typename im_T, typename num_T>
+template <NumericType im_T>
+Image<im_T> Image<im_T>::operator*=(const Image<im_T>& rhs) {
+	//Поэлементное умножение мариц ==> матрицы одинаковых размеров
+	if (this->get_columns() != rhs.get_columns()) {
+		throw std::invalid_argument("Count of columns is not equal in arguments!");
+	}
+	if (this->get_rows() != rhs.get_rows()) {
+		throw std::invalid_argument("Count of rows is not equal in arguments!");
+	}
+
+	for (size_t i = 0; i < get_rows(); ++i) {
+		for (size_t j = 0; j < get_columns(); ++j) {
+			(*this)(i, j) = mult_mod((*this)(i, j), rhs(i, j));
+		}
+	}
+	return *this;
+}
+
+template <NumericType im_T>
+Image<im_T> Image<im_T>::operator*(const Image<im_T>& rhs) const{
+	Image<im_T> result(*this);
+	result *= rhs;
+	return result;
+}
+
+template <NumericType im_T, NumericType num_T>
 Image<im_T> operator*(const num_T lhs, Image<im_T>& image) {
 	Image<im_T> result(image);
 	result *= (im_T)lhs;
 	return result;
 }
 
-template <typename im_T>
+template <NumericType im_T>
 float Image<im_T>::fill_coefficient() const {
-	float res = 0;
+	float tmp = 0;
 	for (size_t i = 0; i < _rows * _columns; ++i) {
-		res += (_matrix[i] / (get_rows() * get_columns() * std::numeric_limits<im_T>::max()));
+		tmp += _matrix[i];
 	}
-	return res;
+	return tmp / (get_rows() * get_columns() * 255);
+}
+
+template <>
+float Image<char>::fill_coefficient() const {
+	float tmp = 0;
+	for (size_t i = 0; i < _rows * _columns; ++i) {
+		tmp += _matrix[i];
+	}
+	return tmp / (get_rows() * get_columns() * 128);
 }
 
 template <typename T>
@@ -333,7 +376,7 @@ char inverse(const char x) {
 	return (128 - x);
 }
 
-template <typename im_T>
+template <NumericType im_T>
 Image<im_T> Image<im_T>::operator!() const{
 	Image<im_T> result(*this);
 	im_T* res_matrix = result.get_matrix();
@@ -343,7 +386,7 @@ Image<im_T> Image<im_T>::operator!() const{
 	return result;
 }
 
-template <typename im_T>
+template <NumericType im_T>
 std::ostream& operator<<(std::ostream& os, const Image<im_T>& im) {
 	for (int i = 0; i < im.get_rows(); ++i) {
 		os << " ";
