@@ -55,10 +55,77 @@ Image<T> inverse_under_line(const Image<T>& image, const int x1, const int y1, c
 int main() {
 	ios_start();
 	
+	//Демонстранционный main
+	//Сложение одинаковых матриц
+	{
+		Image<float> imag1(4, 4, true);
+		Image<float> imag2(4, 4, true);
+
+		cout << "imag1\n" << imag1;
+		cout << "______________________\nimag2\n" << imag2;
+		cout << "______________________\nimag1+imag2\n";
+		cout << imag1 + imag2;
+		cout << "_______________________\n";
+	}
+	//Сложение разных матриц
+	{
+		Image<short> imag3(5, 1, true);
+		Image<short> imag4(2, 7, true);
+
+		cout << "imag3\n" << imag3;
+		cout << "______________________\nimag4\n" << imag4;
+		cout << "______________________\nimag3+imag4\n";
+		cout << imag3 + imag4;
+		cout << "_______________________\n";
+	}
+	//Вычитание одинаковых матриц
+	{
+		Image<bool> imag5(8, 8, true);
+		Image<bool> imag6(8, 8, true);
+
+		cout << "imag5\n" << imag5;
+		cout << "______________________\nimag6\n" << imag6;
+		cout << "______________________\nimag5-imag6\n";
+		cout << imag5 - imag6;
+		cout << "_______________________\n";
+	}
+	//Вычитание разных матриц
+	{
+		Image<char> imag7(5, 8, true);
+		Image<char> imag8(9, 3, true);
+
+		cout << "imag7\n" << imag7;
+		cout << "______________________\nimag8\n" << imag8;
+		cout << "______________________\nimag5-imag6\n";
+		cout << imag7 - imag8;
+		cout << "_______________________\n";
+	}
+	//Умножение матрицы на скаляр
+	{
+		Image<short> imag9(3, 4, true);
+		cout << "imag9\n" << imag9;
+		cout << "_________________\n5*imag9\n";
+		cout << 5 * imag9;
+		cout << "_________________\n";
+	}
+	//Инверсия матрицы
+	{
+		Image<char> imag10(6, 6, true);
+		cout << "imag10\n" << imag10;
+		cout << "_________________\n";
+		cout << "!imag10\n" << !imag10;
+		cout << "_________________\n";
+	}
+
+	
+	cout << "Example of solving task 6-4\n";
+	cout << "Line points: (2,3), (6,7)\n";
+	//Пример решения задачи (вариант 6, задача 4)
 	const Image<char> imag(3, 4, true);
 
+	cout << "imag\n";
 	cout << imag;
-	cout << "____________\n";
+	cout << "____________\nresult\n";
 	cout << inverse_under_line(imag, 2, 3, 6, 7);
 	
 
