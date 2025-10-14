@@ -5,13 +5,6 @@
 #include "random_number.h"
 #include "moduled_operations.h"
 
-template <typename T>
-concept NumericType = std::same_as<T, short> ||
-	std::same_as<T, float> ||
-	std::same_as<T, bool> ||
-	std::same_as<T, char> ||
-	std::same_as<T, int>;
-
 
 template <NumericType im_T>
 class Image {
@@ -27,7 +20,7 @@ public:
 	Image(const size_t rows, const size_t columns, const bool random_fill); // Создаёт нулевую матрицу заданной размерности
 	Image(const Image& cpy);
 
-	~Image(void) = default;
+	~Image(void);
 	
 	size_t get_rows() const;
 	size_t get_columns() const;
@@ -60,78 +53,18 @@ public:
 	float fill_coefficient() const;
 };
 
-
 template <NumericType im_T>
 const double Image<im_T>::_eps = 1e-6;
 
-// Специализации конструктора для каждого из типов данных
-//bool
-template<>
-Image<bool>::Image(const size_t rows, const size_t columns, const bool random_fill) : _rows(rows), _columns(columns) {
-	_matrix = new bool[rows * columns];
+template<NumericType im_T>
+Image<im_T>::Image(const size_t rows, const size_t columns, const bool random_fill) : _rows(rows), _columns(columns) {
+	_matrix = new im_T[rows * columns];
 
-	bool* ptr = _matrix;
+	im_T* ptr = _matrix;
 
 	if (random_fill) {
 		for (size_t i = 0; i < rows * columns; ++i, ptr++) {
-			*ptr = random_bool();
-		}
-	}
-	else {
-		for (size_t i = 0; i < rows * columns; ++i, ptr++) {
-			*ptr = false;
-		}
-	}
-}
-
-//float
-template<>
-Image<float>::Image(const size_t rows, const size_t columns, const bool random_fill) : _rows(rows), _columns(columns) {
-	_matrix = new float[rows * columns];
-
-	float* ptr = _matrix;
-
-	if (random_fill) {
-		for (size_t i = 0; i < rows * columns; ++i, ptr++) {
-			*ptr = random_float();
-		}
-	}
-	else {
-		for (size_t i = 0; i < rows * columns; ++i, ptr++) {
-			*ptr = 0;
-		}
-	}
-}
-
-//char
-template<>
-Image<char>::Image(const size_t rows, const size_t columns, const bool random_fill) : _rows(rows), _columns(columns) {
-	_matrix = new char[rows * columns];
-
-	char* ptr = _matrix;
-
-	if (random_fill) {
-		for (size_t i = 0; i < rows * columns; ++i, ptr++) {
-			*ptr = random_char();
-		}
-	}
-	else {
-		for (size_t i = 0; i < rows * columns; ++i, ptr++) {
-			*ptr = 0;
-		}
-	}
-}
-
-//short
-template<>
-Image<short>::Image(const size_t rows, const size_t columns, const bool random_fill) : _rows(rows), _columns(columns) {
-	_matrix = new short[rows * columns];
-
-	short* ptr = _matrix;
-
-	if (random_fill) {
-		for (size_t i = 0; i < rows * columns; ++i, ptr++) {
-			*ptr = random_short();
+			*ptr = random_element((im_T)1);
 		}
 	}
 	else {
@@ -144,6 +77,14 @@ Image<short>::Image(const size_t rows, const size_t columns, const bool random_f
 template <NumericType im_T>
 im_T* Image<im_T>::get_matrix() const {
 	return _matrix;
+}
+
+template <NumericType im_T>
+Image<im_T>::~Image() {
+	if (!_matrix) {
+		delete[] _matrix;
+		_matrix = nullptr;
+	}
 }
 
 template <NumericType im_T>
