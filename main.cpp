@@ -39,7 +39,7 @@ Image<T> inverse_under_line(const Image<T>& image, const int x1, const int y1, c
 		int end = -(line_l.A / line_l.B) * (int)j - (line_l.C / line_l.B);
 
 		if (end < 0){
-			end = image.get_rows();
+			end = 0;
 		}
 		else if (end > image.get_rows()) {
 			end = image.get_rows();
@@ -155,7 +155,7 @@ int main() {
 	cout << "Example of solving task 6-4\n";
 	cout << "Line points: (2,3), (6,7)\n";
 	//Пример решения задачи (вариант 6, задача 4)
-	const Image<char> imag(3, 4, true);
+	const Image<char> imag(7, 9, true);
 
 	cout << "imag\n";
 	cout << imag;

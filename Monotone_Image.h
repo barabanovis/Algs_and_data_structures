@@ -53,6 +53,20 @@ public:
 	float fill_coefficient() const;
 };
 
+size_t max(const size_t a, const size_t b) {
+	if (a > b) {
+		return a;
+	}
+	return b;
+}
+
+size_t min(const size_t a, const size_t b) {
+	if (a < b) {
+		return a;
+	}
+	return b;
+}
+
 template <NumericType im_T>
 const double Image<im_T>::_eps = 1e-6;
 
@@ -129,19 +143,8 @@ Image<im_T>::Image(const Image& cpy) :_rows(cpy.get_rows()), _columns(cpy.get_co
 	}
 }
 
-std::size_t max(const std::size_t a, const std::size_t b) {
-	if (a > b) {
-		return a;
-	}
-	return b;
-}
 
-std::size_t min(const std::size_t a, const std::size_t b) {
-	if (a < b) {
-		return a;
-	}
-	return b;
-}
+
 
 template <NumericType im_T>
 bool Image<im_T>::operator==(const Image<im_T>& rhs) const {
@@ -155,7 +158,7 @@ bool Image<im_T>::operator==(const Image<im_T>& rhs) const {
 	im_T* rhs_matrix = rhs.get_matrix();
 
 	for (size_t i = 0; i < _rows * _columns; ++i) {
-		if (_matrix[i] - rhs_matrix[i] > _eps) {
+		if (abs(_matrix[i] - rhs_matrix[i]) > _eps) {
 			return false;
 		}
 	}
@@ -198,7 +201,6 @@ Image<im_T> Image<im_T>::operator+(const Image<im_T>& rhs) const {
 	result += rhs;
 	return result;
 }
-
 
 
 template <NumericType im_T>
@@ -300,6 +302,15 @@ float Image<char>::fill_coefficient() const {
 		tmp += _matrix[i];
 	}
 	return tmp / (get_rows() * get_columns() * 128);
+}
+
+template <>
+float Image<bool>::fill_coefficient() const {
+	float tmp = 0;
+	for (size_t i = 0; i < _rows * _columns; ++i) {
+		tmp += _matrix[i];
+	}
+	return tmp / (get_rows() * get_columns() * 2);
 }
 
 template <typename T>
