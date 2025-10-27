@@ -20,13 +20,13 @@ public:
 
 	~LinkedList();
 
-	T operator=(const T& rhs);
+	LinkedList<T> operator=(const LinkedList<T>& rhs);
+
+	void push_head(const T& elem);
+	void push_head(const LinkedList<T>& list);
 
 	void push_tail(const T& elem);
 	void push_tail(const LinkedList<T>& list);
-	
-	void push_head(const T& elem);
-	void push_head(const LinkedList<T>% list);
 
 	T pop_head();
 	T pop_tail();
@@ -38,12 +38,12 @@ public:
 };
 
 template <typename T>
-LinkedList<T>::get_head() const{
+Node<T>* LinkedList<T>::get_head() const{
 	return _head;
 }
 
 template <typename T>
-LinkedList<T>::get_tail() const{
+Node<T>* LinkedList<T>::get_tail() const{
 	return _tail;
 }
 
@@ -58,7 +58,7 @@ LinkedList<T>::LinkedList() {
 }
 
 template <typename T>
-bool LinkedList<T>::is_empty() {
+bool LinkedList<T>::is_empty() const{
 	return (!_head);
 }
 
@@ -87,12 +87,18 @@ LinkedList<T>::~LinkedList() {
 	return;
 }
 
+template <typename T>
+LinkedList<T> LinkedList<T>::operator=(const LinkedList<T>& rhs) {
+	this->~LinkedList();
+
+}
+
 // операции дл€ добавлени€ величины в конец и начало списка
 //в конец
 template <typename T>
-void LinkedList<T>::push_tail(const T& val) {
+void LinkedList<T>::push_tail(const T& elem) {
 	Node<T>* new_node = new Node<T>;
-	new_node->value = val;
+	new_node->value = elem;
 	new_node->next = nullptr;
 	new_node->prev = get_tail();
 	get_tail()->next = new_node;
@@ -101,9 +107,9 @@ void LinkedList<T>::push_tail(const T& val) {
 
 //в начало
 template <typename T>
-void LinkedList<T>::push_head(const T& val) {
+void LinkedList<T>::push_head(const T& elem) {
 	Node<T>* new_node = new Node<T>;
-	new_node->value = val;
+	new_node->value = elem;
 	new_node->prev = nullptr;
 	new_node->next = get_head();
 	get_head()->prev = new_node;
@@ -113,9 +119,73 @@ void LinkedList<T>::push_head(const T& val) {
 //операции дл€ склейки списков
 //список cpy клеим в начало
 template <typename T>
-void LinkedList<T>::push_head(const LinkedList<T>& cpy) {
+void LinkedList<T>::push_head(const LinkedList<T>& list){
+	Node<T>* p1 = list.get_head();
+	//ƒелаем копию списка list в динамической пам€ти и присоедин€ем его к исходному
+	Node<T>* p2 = 
+
 
 }
 
 //список cpy клеим в конец
+
+
+
+template <typename T>
+T LinkedList<T>::pop_head() {
+	Node<T>* p = get_head();
+	_head = _head->next;
+	T tmp = p->value;
+	delete p;
+	p = nullptr;
+	return tmp;
+}
+
+template <typename T>
+T LinkedList<T>::pop_tail() {
+	Node<T>* p = get_tail();
+	_tail = _tail->prev;
+	T tmp = p->value;
+	delete p;
+	p = nullptr;
+	return tmp;
+}
+
+
+// ќператор по индексу
+template <typename T>
+const T LinkedList<T>::operator[](const int ind) const{
+	if (ind < 0) {
+		throw std::invalid_argument("List index is negative!");
+	}
+	size_t tmp = 0;
+	Node<T>* p = get_head();
+	while (p) {
+		if (tmp == ind) {
+			return p->value;
+		}
+		p = p->next;
+		++tmp;
+	}
+
+	throw std::invalid_argument("List index out of range!");
+}
+
+template <typename T>
+T& LinkedList<T>::operator[](const int ind){
+	if (ind < 0) {
+		throw std::invalid_argument("List index is negative!");
+	}
+	size_t tmp = 0;
+	Node<T>* p = get_head();
+	while (p) {
+		if (tmp == ind) {
+			return p->value;
+		}
+		p = p->next;
+		++tmp;
+	}
+
+	throw std::invalid_argument("List index out of range!");
+}
 #endif
