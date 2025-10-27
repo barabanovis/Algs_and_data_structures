@@ -88,6 +88,8 @@ LinkedList<T>::~LinkedList() {
 }
 
 // операции для добавления величины в конец и начало списка
+//в конец
+template <typename T>
 void LinkedList<T>::push_tail(const T& val) {
 	Node<T>* new_node = new Node<T>;
 	new_node->value = val;
@@ -97,6 +99,8 @@ void LinkedList<T>::push_tail(const T& val) {
 	_tail = new_node;
 }
 
+//в начало
+template <typename T>
 void LinkedList<T>::push_head(const T& val) {
 	Node<T>* new_node = new Node<T>;
 	new_node->value = val;
@@ -106,8 +110,12 @@ void LinkedList<T>::push_head(const T& val) {
 	_head = new_node;
 }
 
+//операции для склейки списков
+//список cpy клеим в начало
 template <typename T>
-bool LinkedList<T>::operator=(const LinkedList& rhs){
+void LinkedList<T>::push_head(const LinkedList<T>& cpy) {
 
 }
+
+//список cpy клеим в конец
 #endif
