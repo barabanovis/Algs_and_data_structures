@@ -7,9 +7,11 @@ template <typename T>
 class LinkedList {
 private:
 	Node<T>* _head;
+	Node<T>* _tail;
 
-public:
 	Node<T>* get_head() const;
+	Node<T>* get_tail() const;
+public:
 	bool is_empty() const;
 
 	LinkedList();
@@ -36,10 +38,19 @@ public:
 };
 
 template <typename T>
-LinkedList<T>::get_head() {
+LinkedList<T>::get_head() const{
 	return _head;
 }
 
+template <typename T>
+LinkedList<T>::get_tail() const{
+	return _tail;
+}
+
+template <typename T>
+bool LinkedList<T>::is_empty() const {
+	return (!_head)
+}
 
 template <typename T>
 LinkedList<T>::LinkedList() {
@@ -61,4 +72,42 @@ LinkedList<T>::LinkedList(const LinkedList& cpy) {
 	
 }
 
+template <typename T>
+LinkedList<T>::~LinkedList() {
+	if (is_emplty()) return;
+
+	Node<T>* p1=get_head();
+	Node<T>* p2 = p1->next;
+	
+	while (!p2) {
+		delete p1;
+		p1 = p2;
+		p2 = p2->next;
+	}
+	return;
+}
+
+// операции для добавления величины в конец и начало списка
+void LinkedList<T>::push_tail(const T& val) {
+	Node<T>* new_node = new Node<T>;
+	new_node->value = val;
+	new_node->next = nullptr;
+	new_node->prev = get_tail();
+	get_tail()->next = new_node;
+	_tail = new_node;
+}
+
+void LinkedList<T>::push_head(const T& val) {
+	Node<T>* new_node = new Node<T>;
+	new_node->value = val;
+	new_node->prev = nullptr;
+	new_node->next = get_head();
+	get_head()->prev = new_node;
+	_head = new_node;
+}
+
+template <typename T>
+bool LinkedList<T>::operator=(const LinkedList& rhs){
+
+}
 #endif

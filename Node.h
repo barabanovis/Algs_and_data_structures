@@ -3,7 +3,7 @@
 
 template <typename T>
 struct Node {
-	T _value;
+	T value;
 	Node* prev;
 	Node* next;
 };
