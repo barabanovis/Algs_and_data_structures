@@ -16,7 +16,9 @@ public:
 
 	LinkedList();
 	LinkedList(const LinkedList<T>& cpy);
-	LinkedList(const int a, const int b);
+
+	// онструктор - генератор случайного списка
+	//LinkedList(const int a, const int b, const int n); 
 
 	~LinkedList();
 
@@ -89,8 +91,39 @@ LinkedList<T>::~LinkedList() {
 
 template <typename T>
 LinkedList<T> LinkedList<T>::operator=(const LinkedList<T>& rhs) {
-	this->~LinkedList();
+	// «ачистка данного списка
+	if (get_head()) {
+		Node<T>* prev = get_head();
+		Node<T>* cur = get_head()->next;
+		while (cur) {
+			delete prev;
+			prev = nullptr;
+			prev = cur;
+			cur = cur->next;
+		}
+	}
+	_head = nullptr;
 
+	//  опирование правого в левый
+	Node<T>* p_rhs = rhs->get_head();
+	
+	if (p_rhs) {
+		_head = new Node<T>;
+		_head->value = p_rhs->value;
+		_head->prev = nullptr;
+		p_rhs = p_rhs->next;
+
+		Node<T>* p_cur = _head;
+		while (p_rhs) {
+			Node<T>* p_new = new Node<T>;
+			p_new->value = p_rhs->value;
+			p_new->prev = p_cur;
+			p_new->next = nullptr;
+			p_cur->next = p_new;
+
+			p_rhs = p_rhs->next;
+		}
+	}
 }
 
 // операции дл€ добавлени€ величины в конец и начало списка
@@ -151,6 +184,15 @@ T LinkedList<T>::pop_tail() {
 	return tmp;
 }
 
+template <typename T>
+void LinkedList<T>::delete_node(const T& val) {
+	Node<T>* p = get_head();
+	while (p) {
+		if (p->value == val){}
+		p = p->next;
+	}
+	throw std::invalid_argument("There isn`t any nodes with asked value!")
+}
 
 // ќператор по индексу
 template <typename T>
