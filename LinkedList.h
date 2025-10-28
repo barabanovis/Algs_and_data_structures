@@ -4,6 +4,12 @@
 #include "Node.h"
 
 template <typename T>
+struct ListData {
+	Node<T>* head;
+	Node<T>* tail;
+};
+
+template <typename T>
 class LinkedList {
 private:
 	Node<T>* _head;
@@ -11,6 +17,8 @@ private:
 
 	Node<T>* get_head() const;
 	Node<T>* get_tail() const;
+
+	ListData<T> list_copy() const;
 public:
 	bool is_empty() const;
 
@@ -39,17 +47,13 @@ public:
 	T& operator[](const int ind);
 };
 
-template <typename T>
-struct ListData {
-	Node<T>* head;
-	Node<T>* tail;
-};
+
 
 //Отдельная ф-я создания списка-копии
 template <typename T>
-ListData<T> list_copy(const LinkedList<T>& list) {
+ListData<T> LinkedList<T>::list_copy() const{
 	ListData<T> res = { nullptr, nullptr };
-	if (list.is_empty()) {
+	if (is_empty()) {
 		return res;
 	}
 
@@ -134,10 +138,11 @@ LinkedList<T> LinkedList<T>::operator=(const LinkedList<T>& rhs) {
 			cur = cur->next;
 		}
 	}
-	_head = nullptr;
-
-	// Копирование правого
 	
+	// Копирование правого
+	ListData<T> rhs_cpy = rhs.list_copy();
+	_head = rhs_cpy.head;
+	_tail = rhs_cpy.tail;
 }
 
 // операции для добавления величины в конец и начало списка
@@ -171,7 +176,7 @@ void LinkedList<T>::push_head(const LinkedList<T>& list){
 	if (list.is_empty()) {
 		return;
 	}
-	ListData<T> copyed_list = list_copy(list);
+	ListData<T> copyed_list = list.list_copy();
 	copyed_list.tail->next = get_head();
 	get_head()->prev = copyed_list.tail;
 	_head = copyed_list.head;
@@ -183,7 +188,7 @@ void LinkedList<T>::push_tail(const LinkedList<T>& list) {
 	if (list.is_empty()) {
 		return;
 	}
-	ListData<T> copyed_list = list_copy(list);
+	ListData<T> copyed_list = list.list_copy();
 	get_tail()->next = copyed_list.head;
 	copyed_list.head->prev = get_tail();
 	_tail = copyed_list.tail;
