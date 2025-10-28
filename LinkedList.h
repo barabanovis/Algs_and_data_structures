@@ -58,7 +58,7 @@ ListData<T> LinkedList<T>::list_copy() const{
 	}
 
 	res.head = new Node<T>;
-	res.head->value = list.get_head()->value;
+	res.head->value = get_head()->value;
 
 	Node<T>* p_list = get_head()->next;
 	Node<T>* p_prev = res.head;
@@ -87,17 +87,13 @@ Node<T>* LinkedList<T>::get_tail() const{
 
 template <typename T>
 bool LinkedList<T>::is_empty() const {
-	return (!_head)
+	return (!_head);
 }
 
 template <typename T>
 LinkedList<T>::LinkedList() {
 	_head = nullptr;
-}
-
-template <typename T>
-bool LinkedList<T>::is_empty() const{
-	return (!_head);
+	_tail = nullptr;
 }
 
 template <typename T>
@@ -112,15 +108,15 @@ LinkedList<T>::LinkedList(const LinkedList& cpy) {
 
 template <typename T>
 LinkedList<T>::~LinkedList() {
-	if (is_emplty()) return;
+	if (is_empty()) {
+		return;
+	}
 
-	Node<T>* p1=get_head();
-	Node<T>* p2 = p1->next;
-	
-	while (!p2) {
-		delete p1;
-		p1 = p2;
-		p2 = p2->next;
+	Node<T>* p = get_head();
+	while (p) {
+		Node<T>* prev = p;
+		p = p->next;
+		delete prev;
 	}
 	return;
 }
@@ -153,8 +149,15 @@ void LinkedList<T>::push_head(const T& elem) {
 	new_node->value = elem;
 	new_node->prev = nullptr;
 	new_node->next = get_head();
-	get_head()->prev = new_node;
+	if (get_head()) {
+		get_head()->prev = new_node;
+	}
 	_head = new_node;
+
+	if (!get_tail()) {
+		//≈сли список изначально был пустым, то изменим еще и tail.
+		_tail = new_node;
+	}
 }
 
 //в конец
@@ -164,8 +167,14 @@ void LinkedList<T>::push_tail(const T& elem) {
 	new_node->value = elem;
 	new_node->next = nullptr;
 	new_node->prev = get_tail();
-	get_tail()->next = new_node;
+	if (get_tail()) {
+		get_tail()->next = new_node;
+	}
 	_tail = new_node;
+
+	if (!get_head()) {
+		_head = new_node;
+	}
 }
 
 
@@ -197,21 +206,33 @@ void LinkedList<T>::push_tail(const LinkedList<T>& list) {
 
 template <typename T>
 T LinkedList<T>::pop_head() {
+	if (!get_head()) {
+		throw std::runtime_error("There is nothing to pop!");
+	}
 	Node<T>* p = get_head();
 	_head = _head->next;
 	T tmp = p->value;
 	delete p;
 	p = nullptr;
+	if (get_head() == nullptr) {
+		_tail = nullptr;
+	}
 	return tmp;
 }
 
 template <typename T>
 T LinkedList<T>::pop_tail() {
+	if (!get_tail()) {
+		throw std::runtime_error("There is nothing to pop!");
+	}
 	Node<T>* p = get_tail();
 	_tail = _tail->prev;
 	T tmp = p->value;
 	delete p;
 	p = nullptr;
+	if (get_tail() == nullptr) {
+		_head = nullptr;
+	}
 	return tmp;
 }
 
@@ -222,7 +243,7 @@ void LinkedList<T>::delete_node(const T& val) {
 		if (p->value == val){}
 		p = p->next;
 	}
-	throw std::invalid_argument("There isn`t any nodes with asked value!")
+	throw std::invalid_argument("There isn`t any nodes with asked value!");
 }
 
 // ќператор по индексу
