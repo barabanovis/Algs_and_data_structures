@@ -40,6 +40,38 @@ public:
 };
 
 template <typename T>
+struct ListData {
+	Node<T>* head;
+	Node<T>* tail;
+};
+
+//Отдельная ф-я создания списка-копии
+template <typename T>
+ListData<T> list_copy(const LinkedList<T>& list) {
+	ListData<T> res = { nullptr, nullptr };
+	if (list.is_empty()) {
+		return res;
+	}
+
+	res.head = new Node<T>;
+	res.head->value = list.get_head()->value;
+
+	Node<T>* p_list = get_head()->next;
+	Node<T>* p_prev = res.head;
+	while (p_list) {
+		Node<T>* new_node = new Node<T>;
+		new_node->value = p_list->value;
+		new_node->prev = p_prev;
+		new_node->next = nullptr;
+		p_prev = new_node;
+		p_list = p_list->next;
+	}
+	res.tail = p_prev;
+
+	return res;
+}
+
+template <typename T>
 Node<T>* LinkedList<T>::get_head() const{
 	return _head;
 }
@@ -104,40 +136,11 @@ LinkedList<T> LinkedList<T>::operator=(const LinkedList<T>& rhs) {
 	}
 	_head = nullptr;
 
-	// Копирование правого в левый
-	Node<T>* p_rhs = rhs->get_head();
+	// Копирование правого
 	
-	if (p_rhs) {
-		_head = new Node<T>;
-		_head->value = p_rhs->value;
-		_head->prev = nullptr;
-		p_rhs = p_rhs->next;
-
-		Node<T>* p_cur = _head;
-		while (p_rhs) {
-			Node<T>* p_new = new Node<T>;
-			p_new->value = p_rhs->value;
-			p_new->prev = p_cur;
-			p_new->next = nullptr;
-			p_cur->next = p_new;
-
-			p_rhs = p_rhs->next;
-		}
-	}
 }
 
 // операции для добавления величины в конец и начало списка
-//в конец
-template <typename T>
-void LinkedList<T>::push_tail(const T& elem) {
-	Node<T>* new_node = new Node<T>;
-	new_node->value = elem;
-	new_node->next = nullptr;
-	new_node->prev = get_tail();
-	get_tail()->next = new_node;
-	_tail = new_node;
-}
-
 //в начало
 template <typename T>
 void LinkedList<T>::push_head(const T& elem) {
@@ -149,19 +152,42 @@ void LinkedList<T>::push_head(const T& elem) {
 	_head = new_node;
 }
 
+//в конец
+template <typename T>
+void LinkedList<T>::push_tail(const T& elem) {
+	Node<T>* new_node = new Node<T>;
+	new_node->value = elem;
+	new_node->next = nullptr;
+	new_node->prev = get_tail();
+	get_tail()->next = new_node;
+	_tail = new_node;
+}
+
+
 //операции для склейки списков
 //список cpy клеим в начало
 template <typename T>
 void LinkedList<T>::push_head(const LinkedList<T>& list){
-	Node<T>* p1 = list.get_head();
-	//Делаем копию списка list в динамической памяти и присоединяем его к исходному
-	Node<T>* p2 = 
-
-
+	if (list.is_empty()) {
+		return;
+	}
+	ListData<T> copyed_list = list_copy(list);
+	copyed_list.tail->next = get_head();
+	get_head()->prev = copyed_list.tail;
+	_head = copyed_list.head;
 }
 
-//список cpy клеим в конец
-
+//список cpy клеим в конец (аналогично предыдущему)
+template <typename T>
+void LinkedList<T>::push_tail(const LinkedList<T>& list) {
+	if (list.is_empty()) {
+		return;
+	}
+	ListData<T> copyed_list = list_copy(list);
+	get_tail()->next = copyed_list.head;
+	copyed_list.head->prev = get_tail();
+	_tail = copyed_list.tail;
+}
 
 
 template <typename T>
