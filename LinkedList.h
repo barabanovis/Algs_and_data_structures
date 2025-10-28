@@ -59,18 +59,20 @@ ListData<T> LinkedList<T>::list_copy() const{
 
 	res.head = new Node<T>;
 	res.head->value = get_head()->value;
+	res.head->prev = nullptr;
 
 	Node<T>* p_list = get_head()->next;
-	Node<T>* p_prev = res.head;
+	Node<T>* p_copy = res.head;
 	while (p_list) {
 		Node<T>* new_node = new Node<T>;
 		new_node->value = p_list->value;
-		new_node->prev = p_prev;
+		new_node->prev = p_copy;
+		p_copy->next = new_node;
 		new_node->next = nullptr;
-		p_prev = new_node;
+		p_copy = new_node;
 		p_list = p_list->next;
 	}
-	res.tail = p_prev;
+	res.tail = p_copy;
 
 	return res;
 }
@@ -99,11 +101,13 @@ LinkedList<T>::LinkedList() {
 template <typename T>
 LinkedList<T>::LinkedList(const LinkedList& cpy) {
 	if (cpy.is_empty()) {
-		this = new LinkedList();
+		_head = nullptr;
+		_tail = nullptr;
 		return;
 	}
-	Node<T>* cpy_cur = cpy.get_head();
-	
+	ListData<T> cpy_list = cpy.list_copy();
+	_head = cpy_list.head;
+	_tail = cpy_list.tail;
 }
 
 template <typename T>
@@ -139,6 +143,7 @@ LinkedList<T> LinkedList<T>::operator=(const LinkedList<T>& rhs) {
 	ListData<T> rhs_cpy = rhs.list_copy();
 	_head = rhs_cpy.head;
 	_tail = rhs_cpy.tail;
+	return *this;
 }
 
 // операции для добавления величины в конец и начало списка
@@ -240,7 +245,13 @@ template <typename T>
 void LinkedList<T>::delete_node(const T& val) {
 	Node<T>* p = get_head();
 	while (p) {
-		if (p->value == val){}
+		if (p->value == val){
+			p->prev->next = p->next;
+			p->next->prev = p->prev;
+			delete p;
+			p = nullptr;
+			return;
+		}
 		p = p->next;
 	}
 	throw std::invalid_argument("There isn`t any nodes with asked value!");
