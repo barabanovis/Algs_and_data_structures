@@ -4,7 +4,7 @@ using namespace std;
 
 template <>
 LinkedList<char> numeric_addition(const LinkedList<char>& x, const LinkedList<char>& y) {
-	LinkedList<char> result = x;
+	LinkedList<char> result;
 
 	if (y.is_empty()) {
 		return x;
@@ -14,24 +14,33 @@ LinkedList<char> numeric_addition(const LinkedList<char>& x, const LinkedList<ch
 	}
 
 	Node<char>* p_y = y.get_tail();
-	Node<char>* p_res = x.get_tail();
+	Node<char>* p_x = x.get_tail();
 
 	char transit = 0;
-	while (p_y) {
-		char cur = (p_y->value) + (p_res->value) + transit;
+	while (p_x || p_y) {
+		char cur = transit;
+		if (p_x) {
+			cur += p_x->value;
+		}
+		if (p_y) {
+			cur += p_y->value;
+		}
 		transit = cur / 10;
 		cur = cur % 10;
-		p_res->value = cur;
+		result.push_head(cur);
 
-		if (!(p_res->prev) ) {
-			Node<char>* new_node = new Node<char>;
-			new_node->prev = nullptr;
-			new_node->next = p_res;
-			new_node->value = 0;
+		if (p_x) {
+			p_x = p_x->prev;
 		}
-
-		p_res = p_res->prev;
-		p_y = p_y->prev;
+		if (p_y) {
+			p_y = p_y->prev;
+		}
 	}
+	
+	while (transit > 0) {
+		result.push_head(transit % 10);
+		transit = transit / 10;
+	}
+
 	return result;
 }
