@@ -10,6 +10,37 @@ std::same_as<T, char>;
 template <NumericType T>
 LinkedList<T> numeric_addition(const LinkedList<T>& x, const LinkedList<T>& y);
 
+template <NumericType T, typename mult_T>
+LinkedList<T> operator*(const mult_T mult, const LinkedList<T>& x);
+
+template <typename mult_T>
+LinkedList<char> operator*(const mult_T mult, const LinkedList<char>& x) {
+	LinkedList<char> result;
+	char tmp = (char)mult;
+	char transit = 0;
+	Node<char>* p_x = x.get_tail();
+	while (p_x) {
+		char cur = transit + (p_x->value) * tmp;
+		transit = cur / 10;
+		cur = cur % 10;
+		result.push_head(cur);
+		p_x = p_x->prev;
+	}
+
+	while (transit > 0) {
+		result.push_head(transit % 10);
+		transit /= 10;
+	}
+	return result;
+}
+
+template <NumericType T, typename mult_T>
+LinkedList<T> operator*(const LinkedList<T>& x, const mult_T mult) {
+	return (mult * x);
+}
+
+
+
 template <NumericType T>
 LinkedList<T> numeric_multiplication(const LinkedList<T>& x, const LinkedList<T>& y);
 
