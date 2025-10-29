@@ -296,20 +296,21 @@ T& LinkedList<T>::operator[](const int ind){
 }
 
 template <typename T>
-std::ostream& operator<<(std::ostream& os, const LinkedList<T>& list) {
+inline std::ostream& operator<<(std::ostream& os, const LinkedList<T>& list) {
 	Node<T>* p = list.get_head();
 
 	while (p) {
-		os << " ";
 		os << p->value;
+		os << " ";
 		p = p->next;
 	}
 	os << '\n';
 	return os;
 }
 
+
 template <>
-std::ostream& operator<<(std::ostream& os, const LinkedList<char>& list) {
+inline std::ostream& operator<<(std::ostream& os, const LinkedList<char>& list) {
 	Node<char>* p = list.get_head();
 
 	while (p) {
@@ -320,4 +321,5 @@ std::ostream& operator<<(std::ostream& os, const LinkedList<char>& list) {
 	os << '\n';
 	return os;
 }
+
 #endif

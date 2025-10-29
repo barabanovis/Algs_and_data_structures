@@ -11,11 +11,12 @@ int main() {
 	x.push_head(2);
 	x.push_head(3);
 
+	
 	LinkedList<char> y;
 	y.push_tail(5);
 	y.push_tail(4);
 	y.push_tail(7);
-
+	
 
 	cout << x;
 	cout << y;
