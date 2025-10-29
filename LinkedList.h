@@ -2,6 +2,7 @@
 #define LINDED_LIST_H
 
 #include "Node.h"
+#include <iostream>
 
 template <typename T>
 struct ListData {
@@ -15,11 +16,11 @@ private:
 	Node<T>* _head;
 	Node<T>* _tail;
 
+	ListData<T> list_copy() const;
+public:
 	Node<T>* get_head() const;
 	Node<T>* get_tail() const;
 
-	ListData<T> list_copy() const;
-public:
 	bool is_empty() const;
 
 	LinkedList();
@@ -292,5 +293,31 @@ T& LinkedList<T>::operator[](const int ind){
 	}
 
 	throw std::invalid_argument("List index out of range!");
+}
+
+template <typename T>
+std::ostream& operator<<(std::ostream& os, const LinkedList<T>& list) {
+	Node<T>* p = list.get_head();
+
+	while (p) {
+		os << " ";
+		os << p->value;
+		p = p->next;
+	}
+	os << '\n';
+	return os;
+}
+
+template <>
+std::ostream& operator<<(std::ostream& os, const LinkedList<char>& list) {
+	Node<char>* p = list.get_head();
+
+	while (p) {
+		os << " ";
+		os << (int)(p->value);
+		p = p->next;
+	}
+	os << '\n';
+	return os;
 }
 #endif

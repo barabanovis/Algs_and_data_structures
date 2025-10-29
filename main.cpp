@@ -1,25 +1,24 @@
-#include <iostream>
 #include "LinkedList.h"
+#include "ios_start.h"
 
 using namespace std;
 
 int main() {
-	LinkedList<int> lst1;
-	lst1.push_tail(1);
-	lst1.push_tail(2);
-	lst1.push_tail(3);
+	ios_start();
+
+	LinkedList<char> x;
+	x.push_head(1);
+	x.push_head(2);
+	x.push_head(3);
+
+	LinkedList<char> y;
+	y.push_tail(5);
+	y.push_tail(4);
+	y.push_tail(7);
 
 
-	
-	
-	lst1[1] = 5;
-	
-	
-
-	
-	for (size_t i = 0; i < 3; ++i) {
-		cout << lst1[i] << " ";
-	}
+	cout << x;
+	cout << y;
 
 	return 0;
 }
