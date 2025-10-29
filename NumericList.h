@@ -35,7 +35,8 @@ LinkedList<char> operator*(const mult_T mult, const LinkedList<char>& x) {
 }
 
 template <typename mult_T>
-LinkedList<bool> operator*(const mult_T mult, const LinkedList<bool>& x) {
+LinkedList<bool> operator*(const mult_T mult, const LinkedList<bool>& x)
+{
 	if ((bool)mult) {
 		return x;
 	}
@@ -54,6 +55,12 @@ LinkedList<T> operator*(const LinkedList<T>& x, const mult_T mult) {
 
 template <NumericType T>
 LinkedList<T> numeric_multiplication(const LinkedList<T>& x, const LinkedList<T>& y) {
+	if (x.is_empty() || y.is_empty()) {
+		LinkedList<T> null_list;
+		null_list.push_head(0);
+		return null_list;
+	}
+
 	LinkedList<T> result;
 	Node<T>* p_y = y.get_tail();
 	size_t digit_number = 0;

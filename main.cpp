@@ -6,16 +6,13 @@ using namespace std;
 int main() {
 	ios_start();
 
-	LinkedList<bool> x;
-	x.push_head(0);
-	x.push_head(1);
-	x.push_head(1);
+	LinkedList<char> x(0,9,10);
+	
 
-	LinkedList<bool> y;
-	y.push_head(0);
-	y.push_head(1);
+	LinkedList<char> y(0,7,13);
 
-	LinkedList<bool> z = numeric_multiplication(x, y);
+
+	LinkedList<char> z = numeric_multiplication(x, y);
 
 	cout << x;
 	cout << y;

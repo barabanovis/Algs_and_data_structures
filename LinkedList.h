@@ -3,6 +3,10 @@
 
 #include "Node.h"
 #include <iostream>
+#include <random>
+#include <ctime>
+
+
 
 template <typename T>
 struct ListData {
@@ -13,8 +17,8 @@ struct ListData {
 template <typename T>
 class LinkedList {
 private:
-	Node<T>* _head;
-	Node<T>* _tail;
+	Node<T>* _head = nullptr;
+	Node<T>* _tail = nullptr;
 
 	ListData<T> list_copy() const;
 public:
@@ -27,7 +31,7 @@ public:
 	LinkedList(const LinkedList<T>& cpy);
 
 	//Конструктор - генератор случайного списка
-	//LinkedList(const int a, const int b, const int n); 
+	LinkedList(const int a, const int b, const int n);
 
 	~LinkedList();
 
@@ -48,7 +52,19 @@ public:
 	T& operator[](const int ind);
 };
 
+template <typename T>
+LinkedList<T>::LinkedList(const int a, const int b, const int n):_head(nullptr), _tail(nullptr) {
+	std::mt19937 gen(time(NULL));
+	std::uniform_int_distribution<> distrib(a, b);
+	
+	for (size_t i = 0; i < n; ++i) {
+		push_head(distrib(gen));
+	}
 
+	while (!is_empty() && get_head()->value == 0) {
+		pop_head();
+	}
+}
 
 //Отдельная ф-я создания списка-копии
 template <typename T>
@@ -151,6 +167,16 @@ LinkedList<T> LinkedList<T>::operator=(const LinkedList<T>& rhs) {
 //в начало
 template <typename T>
 void LinkedList<T>::push_head(const T& elem) {
+	if (is_empty()) {
+		Node<T>* new_node = new Node<T>;
+		new_node->value = elem;
+		new_node->prev = nullptr;
+		new_node->next = nullptr;
+		_head = new_node;
+		_tail = new_node;
+		return;
+	}
+
 	Node<T>* new_node = new Node<T>;
 	new_node->value = elem;
 	new_node->prev = nullptr;
@@ -169,6 +195,14 @@ void LinkedList<T>::push_head(const T& elem) {
 //в конец
 template <typename T>
 void LinkedList<T>::push_tail(const T& elem) {
+	if (is_empty()) {
+		Node<T>* new_node = new Node<T>;
+		new_node->value = elem;
+		_head = new_node;
+		_tail = new_node;
+		return;
+	}
+
 	Node<T>* new_node = new Node<T>;
 	new_node->value = elem;
 	new_node->next = nullptr;
