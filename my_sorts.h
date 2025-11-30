@@ -1,0 +1,25 @@
+#ifndef MY_SORTS_H
+#define MY_SORTS_H
+
+#include <iostream>
+#include <vector>
+
+struct stats {
+	size_t comparison_count = 0;
+	size_t copy_count = 0;
+};
+
+// √руппа 1
+stats insert_sort(std::vector<int>& seq);
+
+// √руппа 2
+stats shaker_sort(std::vector<int>& seq);
+
+// √руппа 3
+stats quick_sort(std::vector<int>& seq);
+
+std::ostream& operator<<(std::ostream& os, const stats& stat);
+
+template <typename T>
+std::ostream& operator<<(std::ostream& os, const std::vector<T>& seq);
+#endif
