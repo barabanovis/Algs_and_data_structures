@@ -1,11 +1,25 @@
 #include "my_sorts.h"
+#include "LinkedList/NumericList.h"
 
 using namespace std;
 
+//Вспомогательная ф-я превращения списка в вектор
+vector<int> list_to_vect(LinkedList<int>& list) {
+	vector<int> result(0);
+	
+	while (!list.is_empty()) {
+		result.push_back(list.pop_head());
+	}
+	
+	return result;
+}
+
+
+/*
 // Группа 1
 stats insert_sort(std::vector<int>& seq) {
 	stats stats;
-	//ищется самый малый элемент и вставляется на текущую позицию
+	
 
 	for (size_t i = 1; i < seq.size(); ++i) {
 		int tmp = seq[i];
@@ -26,10 +40,61 @@ stats insert_sort(std::vector<int>& seq) {
 	}
 	return stats;
 }
+*/
+
+// Группа 1
+stats insert_sort(std::vector<int>& seq) {
+	LinkedList<int> list(seq);
+
+	stats stats;
+	
+	if (list.is_empty()) {
+		return stats;
+	}
+
+	if (!(list.get_head()->next)) {
+		return stats;
+	}
+
+
+	auto i = list.get_head()->next;
+	while(i) {
+		int tmp = i->value;
+		stats.copy_count++;
+		// Находим позицию, в кот надо вставить
+		auto j = i->prev;
+		while (j && (tmp < j->value)) {
+			stats.comparison_count++;
+			j->next->value = j->value;
+			stats.copy_count++;
+			j=j->prev;
+		}
+		stats.comparison_count++;
+
+		if (j) {
+			j->next->value = tmp;
+		}
+		else {
+			list.get_head()->value = tmp;
+		}
+		stats.copy_count++;
+		i = i->next;
+	}
+
+	seq = list_to_vect(list);
+	return stats;
+}
+
+
 
 // Группа 2
 stats shaker_sort(std::vector<int>& seq) {
 	stats stats;
+	if (seq.size() <= 1) {
+		return stats;
+	}
+
+	
 
 	size_t lb = 0;
 	size_t rb = seq.size()-1;
@@ -65,9 +130,9 @@ stats shaker_sort(std::vector<int>& seq) {
 
 // Группа 3
 stats quick_sort(std::vector<int>& seq) {
-	stats statistic;
+	stats stat;
 
-	return statistic;
+	return stat;
 }
 
 std::ostream& operator<<(std::ostream& os, const stats& stat) {

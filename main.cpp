@@ -1,7 +1,7 @@
 #include "ios_start.h"
-#include "NumericList.h"
+#include "LinkedList\NumericList.h"
 #include "my_sorts.h"
-#include "random_vector.h"
+#include "experiment\random_vector.h"
 using namespace std;
 
 void f(const int n) {
@@ -17,12 +17,20 @@ void f(const int n) {
 int main() {
 	ios_start();
 	
+	int n;
+	cin >> n;
+	vector<int> vect(n);
+
+	for (auto& u : vect) {
+		cin >> u;
+	}
+
+	stats res = insert_sort(vect);
+	cout << res;
 	
-	f(1000);
-	f(2000);
-	f(3000);
-	f(10000);
-	f(20000);
-	f(50000);
+	for (auto u : vect) {
+		cout << u << " ";
+	}
+	
 	return 0;
 }

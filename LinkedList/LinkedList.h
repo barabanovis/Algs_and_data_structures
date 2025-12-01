@@ -27,8 +27,10 @@ public:
 
 	bool is_empty() const;
 
+	
 	LinkedList();
 	LinkedList(const LinkedList<T>& cpy);
+	LinkedList(const std::vector<T>& cpy_vect);
 
 	// онструктор - генератор случайного списка
 	LinkedList(const int a, const int b, const int n);
@@ -63,6 +65,13 @@ LinkedList<T>::LinkedList(const int a, const int b, const int n):_head(nullptr),
 
 	while (!is_empty() && get_head()->value == 0) {
 		pop_head();
+	}
+}
+
+template <typename T>
+LinkedList<T>::LinkedList(const std::vector<T>& cpy_vect) {
+	for (auto u : cpy_vect) {
+		this->push_tail(u);
 	}
 }
 
@@ -198,6 +207,8 @@ void LinkedList<T>::push_tail(const T& elem) {
 	if (is_empty()) {
 		Node<T>* new_node = new Node<T>;
 		new_node->value = elem;
+		new_node->prev = nullptr;
+		new_node->next = nullptr;
 		_head = new_node;
 		_tail = new_node;
 		return;

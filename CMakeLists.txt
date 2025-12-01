@@ -1,13 +1,13 @@
 cmake_minimum_required(VERSION 3.12)
 
-project("lab2_Aisd" CXX)
+project("lab3_Aisd" CXX)
 
 
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_executable("lab2_Aisd" "main.cpp" "Node.h" "LinkedList.h" "ios_start.h" "ios_start.cpp" "NumericList.h" "NumericList.cpp" "my_sorts.h" "my_sorts.cpp"   "random_vector.h" "random_vector.cpp")
+add_executable("lab3_Aisd" "main.cpp" "LinkedList/Node.h" "LinkedList/LinkedList.h" "ios_start.h" "ios_start.cpp" "LinkedList/NumericList.h" "LinkedList/NumericList.cpp" "my_sorts.h" "my_sorts.cpp"   "experiment/random_vector.h" "experiment/random_vector.cpp")
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang" OR
    CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR
