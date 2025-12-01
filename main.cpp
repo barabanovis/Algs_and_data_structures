@@ -25,7 +25,7 @@ int main() {
 		cin >> u;
 	}
 
-	stats res = insert_sort(vect);
+	stats res = quick_sort(vect,0,n-1);
 	cout << res;
 	
 	for (auto u : vect) {

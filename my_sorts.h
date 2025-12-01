@@ -7,7 +7,11 @@
 struct stats {
 	size_t comparison_count = 0;
 	size_t copy_count = 0;
+
+	stats operator+=(const stats rhs);
 };
+
+stats operator+(const stats lhs, const stats rhs);
 
 // √руппа 1
 stats insert_sort(std::vector<int>& seq);
@@ -16,7 +20,7 @@ stats insert_sort(std::vector<int>& seq);
 stats shaker_sort(std::vector<int>& seq);
 
 // √руппа 3
-stats quick_sort(std::vector<int>& seq);
+stats quick_sort(std::vector<int>& seq,const size_t start,const size_t end);
 
 std::ostream& operator<<(std::ostream& os, const stats& stat);
 

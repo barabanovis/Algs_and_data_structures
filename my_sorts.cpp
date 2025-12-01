@@ -3,6 +3,18 @@
 
 using namespace std;
 
+
+stats stats::operator+=(const stats rhs) {
+	comparison_count += rhs.comparison_count;
+	copy_count += rhs.copy_count;
+	return *this;
+}
+
+stats operator+(const stats lhs, const stats rhs) {
+	stats res = lhs;
+	return res += rhs;
+}
+
 //Вспомогательная ф-я превращения списка в вектор
 vector<int> list_to_vect(LinkedList<int>& list) {
 	vector<int> result(0);
@@ -87,6 +99,7 @@ stats insert_sort(std::vector<int>& seq) {
 
 
 
+
 // Группа 2
 stats shaker_sort(std::vector<int>& seq) {
 	stats stats;
@@ -128,10 +141,76 @@ stats shaker_sort(std::vector<int>& seq) {
 	return stats;
 }
 
-// Группа 3
-stats quick_sort(std::vector<int>& seq) {
-	stats stat;
 
+
+// Группа 3
+/*
+	Здесь и всюду далее будем полагать, что сортируемый массив есть подпоследовательность
+	с индексами [start,end]
+*/
+stats quick_sort(std::vector<int>& seq, const size_t start, const size_t end) {
+	stats stat;
+	if (end <= start) {
+		return stat;
+	}
+	/*
+	Можно также рассмотреть случай n=2 как тривиальный
+	*/
+	if (end - start == 1) {
+		stat.comparison_count++;
+		if (seq[end] < seq[start]) {
+			stat.copy_count += 3;
+			swap(seq[end], seq[start]);
+		}
+		return stat;
+	}
+
+
+	//В качестве опорного элемента выбирается первый (для определенности) поэтому
+	// в дальнейшем будем полагать его за seq[start]
+
+	size_t i = start + 1;
+	size_t j = end;
+	
+	while (j - i > 0) {
+		stat.comparison_count++;
+		while (j > start && seq[j] > seq[start]) {
+			j--;
+		}
+
+		stat.comparison_count++;
+		if (j == start) {
+			return stat;
+		}
+
+		stat.comparison_count++;
+ 		while (i < end && seq[i] < seq[start]) {
+			i++;
+		}
+		if (i < j) {
+			swap(seq[i], seq[j]);
+		}
+	}
+
+	
+	cout << "\n_____________________\n";
+	cout << "anchor = " << seq[start] << " moved with " << seq[j] << '\n';
+	
+
+	stat.copy_count += 3;
+	swap(seq[start], seq[j]);
+	
+	cout << seq;
+	
+	if (j > start) {
+		stat += quick_sort(seq, start, j - 1);
+		cout << "[" << start << "," << j - 1 << "]";
+	}
+	if (j < end) {
+		stat += quick_sort(seq, j + 1, end);
+		cout << " and [" << j + 1 << ", " << end << "]";
+	}
+	cout << "\n_____________________\n";
 	return stat;
 }
 
