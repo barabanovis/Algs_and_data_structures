@@ -198,6 +198,8 @@ void LinkedList<T>::push_tail(const T& elem) {
 	if (is_empty()) {
 		Node<T>* new_node = new Node<T>;
 		new_node->value = elem;
+		new_node->next = nullptr;
+		new_node->prev = nullptr;
 		_head = new_node;
 		_tail = new_node;
 		return;
