@@ -23,7 +23,4 @@ stats shaker_sort(std::vector<int>& seq);
 stats quick_sort(std::vector<int>& seq,const int start,const int end);
 
 std::ostream& operator<<(std::ostream& os, const stats& stat);
-
-template <typename T>
-std::ostream& operator<<(std::ostream& os, const std::vector<T>& seq);
 #endif
