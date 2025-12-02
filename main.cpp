@@ -4,32 +4,21 @@
 #include "experiment\random_vector.h"
 using namespace std;
 
-void f(const int n) {
-	vector<int> vect(n);
-	for (int i = 0; i < n; i++) {
-		vect[i] = n-i;
-	}
-	stats stat = shaker_sort(vect);
-	cout << stat.copy_count << "\t" << stat.comparison_count << '\n';
-}
 
+
+void experiment(const int n) {
+	vector<int> vect = random_int_vector(n);
+
+	stats res= insert_sort(vect);
+	cout <<n << "\t" << res.copy_count << "\t" << res.comparison_count << '\n';
+	
+}
 
 int main() {
 	ios_start();
 	
-	int n;
-	cin >> n;
-	vector<int> vect(n);
-
-	for (auto& u : vect) {
-		cin >> u;
-	}
-
-	stats res = quick_sort(vect,0,n-1);
-	cout << res;
-	
-	for (auto u : vect) {
-		cout << u << " ";
+	for (int k = 1; k <= 50; k++) {
+		experiment(1000 * k);
 	}
 	
 	return 0;

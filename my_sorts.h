@@ -20,7 +20,7 @@ stats insert_sort(std::vector<int>& seq);
 stats shaker_sort(std::vector<int>& seq);
 
 // √руппа 3
-stats quick_sort(std::vector<int>& seq,const size_t start,const size_t end);
+stats quick_sort(std::vector<int>& seq,const int start,const int end);
 
 std::ostream& operator<<(std::ostream& os, const stats& stat);
 

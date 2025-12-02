@@ -148,69 +148,78 @@ stats shaker_sort(std::vector<int>& seq) {
 	Здесь и всюду далее будем полагать, что сортируемый массив есть подпоследовательность
 	с индексами [start,end]
 */
-stats quick_sort(std::vector<int>& seq, const size_t start, const size_t end) {
+stats quick_sort(std::vector<int>& seq, const int start, const int end) {
 	stats stat;
+
+	// Базовые случаи
+	stat.comparison_count++;
 	if (end <= start) {
 		return stat;
 	}
-	/*
-	Можно также рассмотреть случай n=2 как тривиальный
-	*/
+
+	stat.comparison_count++;
 	if (end - start == 1) {
 		stat.comparison_count++;
 		if (seq[end] < seq[start]) {
 			stat.copy_count += 3;
-			swap(seq[end], seq[start]);
+			std::swap(seq[end], seq[start]);
 		}
 		return stat;
 	}
 
+	// Выбираем опорный элемент (фиксируем значение)
+	const int pivot = seq[start];
+	int i = start + 1;  // Левый указатель (идёт вправо)
+	int j = end;        // Правый указатель (идёт влево)
 
-	//В качестве опорного элемента выбирается первый (для определенности) поэтому
-	// в дальнейшем будем полагать его за seq[start]
-
-	size_t i = start + 1;
-	size_t j = end;
-	
-	while (j - i > 0) {
+	stat.comparison_count++;
+	while (i <= j) {
+		// Двигаем левый указатель вправо, пока элемент < pivot
 		stat.comparison_count++;
-		while (j > start && seq[j] > seq[start]) {
+		while (seq[i] < pivot) {
+			stat.comparison_count++;
+			i++;
+		}
+		// Если вышли за границы, корректируем
+		stat.comparison_count++;
+		if (i > end) {
+			i = end;
+		}
+
+		// Двигаем правый указатель влево, пока элемент > pivot
+		stat.comparison_count++;
+		while (seq[j] > pivot) {
+			stat.comparison_count++;
 			j--;
 		}
 
+		// Если указатели не пересеклись, меняем элементы
 		stat.comparison_count++;
-		if (j == start) {
-			return stat;
-		}
-
-		stat.comparison_count++;
- 		while (i < end && seq[i] < seq[start]) {
+		if (i <= j) {
+			stat.comparison_count++;
+			if (i != j) {
+				stat.copy_count += 3;
+				swap(seq[i], seq[j]);
+			}
 			i++;
-		}
-		if (i < j) {
-			swap(seq[i], seq[j]);
+			j--;
 		}
 	}
 
-	
-	cout << "\n_____________________\n";
-	cout << "anchor = " << seq[start] << " moved with " << seq[j] << '\n';
-	
+	// Размещаем pivot на правильное место
+	stat.comparison_count++;
+	if (j != start) {
+		stat.copy_count += 3;
+		std::swap(seq[start], seq[j]);
+	}
 
-	stat.copy_count += 3;
-	swap(seq[start], seq[j]);
-	
-	cout << seq;
-	
-	if (j > start) {
-		stat += quick_sort(seq, start, j - 1);
-		cout << "[" << start << "," << j - 1 << "]";
-	}
-	if (j < end) {
-		stat += quick_sort(seq, j + 1, end);
-		cout << " and [" << j + 1 << ", " << end << "]";
-	}
-	cout << "\n_____________________\n";
+	// Рекурсивно сортируем левую и правую части
+	stats left = quick_sort(seq, start, i - 1);
+	stats right = quick_sort(seq, i, end);
+
+	stat += left;
+	stat += right;
+
 	return stat;
 }
 
