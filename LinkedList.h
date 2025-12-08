@@ -319,7 +319,7 @@ T& LinkedList<T>::operator[](const int ind){
 		throw std::invalid_argument("List index is negative!");
 	}
 	size_t tmp = 0;
-	Node<T>* p = get_head();
+	Node<T>* p = _head;
 	while (p) {
 		if (tmp == ind) {
 			return p->value;
