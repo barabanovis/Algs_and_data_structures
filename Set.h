@@ -15,7 +15,8 @@ private:
 	Node* tree_copy(Node* root);
 	void tree_print(Node* root);
 	bool tree_contains(Node* root, int key);
-	size_t tree_size(Node* root);
+	size_t tree_size(Node* root) const;
+	bool tree_isbalanced(Node* root) const;
 public:
 	Set();
 	Set(const Set& copy);

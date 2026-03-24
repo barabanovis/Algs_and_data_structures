@@ -5,7 +5,7 @@ using namespace std;
 Set::Set() :_root(nullptr) {};
 
 
-Node* Set::tree_copy(Node* root) {
+static Node* Set::tree_copy(Node* root) {
 	if (!root) {
 		return nullptr;
 	}
@@ -66,7 +66,7 @@ bool Set::contains(int key) const {
 	return tree_contains(_root, key);
 }
 
-size_t Set::tree_size(Node* root) {
+size_t Set::tree_size(Node* root) const {
 	if (!root) {
 		return 0;
 	}
@@ -77,9 +77,18 @@ size_t Set::size() const {
 	return tree_size(_root);
 }
 
-int Set::tree_balance_index(Node* root){}
+bool Set::tree_isbalanced(Node* root) const{
+	if (tree_isbalanced(root->left) && tree_isbalanced(root->right)) {
+		int ind = tree_size(root->left) - tree_size(root->right);
+		if (ind >= -1 && ind <= 1) {
+			return true;
+		}
+		return false;
+	}
+	return false;
+}
 
 bool Set::strictly_balanced()const {
-
+	return tree_isbalanced(_root);
 }
 
