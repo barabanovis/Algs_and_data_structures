@@ -5,7 +5,7 @@ using namespace std;
 Set::Set() :_root(nullptr) {};
 
 
-static Node* Set::tree_copy(Node* root) {
+Node* tree_copy(Node* root) {
 	if (!root) {
 		return nullptr;
 	}
@@ -32,8 +32,7 @@ Set::Set(const Set& copy) {
 	_root=tree_copy(copy._root)
 }
 
-
-void Set::tree_print(Node* root) {
+void tree_print(Node* root) {
 	if (!root) {
 		return;
 	}
@@ -46,13 +45,11 @@ void Set::print()const {
 	tree_print(_root);
 }
 
-
-
-bool Set::contains(int key) const {
-	Node* ptr = _root;
+Node* tree_find(Node* root, int key) {
+	Node* ptr = root;
 	while (ptr) {
 		if (ptr->key == key) {
-			return true;
+			return ptr;
 		}
 		else if (key < ptr->key) {
 			ptr = ptr->left;
@@ -61,18 +58,14 @@ bool Set::contains(int key) const {
 			ptr = ptr->right;
 		}
 	}
-	return false;
+	return nullptr;
 }
 
-<<<<<<< HEAD
-size_t Set::tree_size(Node* root) {
-=======
 bool Set::contains(int key) const {
-	return tree_contains(_root, key);
+	return tree_find(_root, key);
 }
 
-size_t Set::tree_size(Node* root) const {
->>>>>>> 4ef7c47d41c889f3ac88e7eccf4ac007ddefb843
+size_t tree_size(Node* root)  {
 	if (!root) {
 		return 0;
 	}
@@ -83,9 +76,18 @@ size_t Set::size() const {
 	return tree_size(_root);
 }
 
-<<<<<<< HEAD
-int Set::tree_balance_index(Node* root){}
+size_t tree_height(Node* root) {
+	if (!root) {
+		return 0;
+	}
+	else {
+		return max(tree_height(root->left), tree_height(root->right)) + 1;
+	}
+}
 
+int vertex_balance_index(Node* root)  {
+	return (int)tree_height(root->left) - (int)tree_height(root->right);
+}
 
 size_t max(size_t a, size_t b) {
 	if (a > b) {
@@ -94,27 +96,95 @@ size_t max(size_t a, size_t b) {
 	return b;
 }
 
-size_t Set::tree_height(Node* root) {
-	if (!root) {
-		return 0;
+int abs(int a) {
+	if (a > 0) {
+		return a;
 	}
 	else {
-		return max(tree_height(root->left), tree_height(root->right)) + 1;
+		return -a;
 	}
-=======
-bool Set::tree_isbalanced(Node* root) const{
-	if (tree_isbalanced(root->left) && tree_isbalanced(root->right)) {
-		int ind = tree_size(root->left) - tree_size(root->right);
-		if (ind >= -1 && ind <= 1) {
-			return true;
-		}
-		return false;
-	}
-	return false;
 }
 
-bool Set::strictly_balanced()const {
-	return tree_isbalanced(_root);
->>>>>>> 4ef7c47d41c889f3ac88e7eccf4ac007ddefb843
+bool vertex_is_balanced(Node* root) {
+	return abs(vertex_balance_index(root)) <= 1;
 }
+
+bool tree_is_balanced(Node* root) {
+	if (!root) {
+		return true;
+	}
+	return vertex_is_balanced(root)&& tree_is_balanced(root->left) && tree_is_balanced(root->right);
+}
+
+bool Set::strictly_balanced() const {
+	return tree_is_balanced(_root);
+}
+
+bool Set::erase(int key) {
+	Node* ptr = _root;
+	Node* prev = ptr;
+	while (ptr) {
+		if (ptr->key == key) {
+			break;
+		}
+		else if (key < ptr->key) {
+			prev = ptr;
+			ptr = ptr->left;
+		}
+		else {
+			prev = ptr;
+			ptr = ptr->right;
+		}
+	}
+	if (!ptr) {
+		return false;
+	}
+
+	bool is_delete_left_son = (prev->left == ptr);
+	 
+	// deleting vertex hasn't got any children
+	if (!ptr->left && !ptr->right) {
+		if (is_delete_left_son) {
+			prev->left = nullptr;
+		}
+		else {
+			prev->right = nullptr;
+		}
+
+		delete ptr;
+		ptr = nullptr;
+
+		return true;
+	}
+
+	// deleting vertex has one son
+	if (ptr->left && !ptr->right) {
+		if (is_delete_left_son) {
+			prev->left = ptr->left;
+		}
+		else {
+			prev->right = ptr->left;
+		}
+		delete ptr;
+		ptr = nullptr;
+		return true;
+	}
+
+	if (!ptr->left && ptr->right) {
+		if (is_delete_left_son) {
+			prev->left = ptr->right;
+		}
+		else {
+			prev->right = ptr->right;
+		}
+		delete ptr;
+		ptr = nullptr;
+		return true;
+	}
+
+	//deleting vertex has son and daugther
+
+	
+}
+
 
