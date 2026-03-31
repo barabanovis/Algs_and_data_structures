@@ -1,6 +1,9 @@
 #ifndef SET_H
 #define SET_H
 
+#include <iostream>
+#include <vector>
+
 struct Node {
 	int value = 0;
 	Node* left = nullptr;
@@ -23,7 +26,7 @@ public:
 	size_t size() const;
 	bool strictly_balanced() const;
 
-
+	std::vector<int> to_vector() const;
 };
 
 #endif
