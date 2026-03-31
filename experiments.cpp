@@ -32,8 +32,8 @@ double average_fill_time(size_t size, size_t attempts) {
 
 double average_find_time(size_t size, size_t attempts) {
 	double res = 0;
+	Set test_set = random_set(size);
 	for (size_t attempt = 0; attempt < attempts; ++attempt) {
-		Set test_set = random_set(size);
 		clock_t start = clock();
 		test_set.contains(lcg());
 		clock_t end = clock();
@@ -44,8 +44,8 @@ double average_find_time(size_t size, size_t attempts) {
 
 double average_insert_time(size_t size, size_t attempts) {
 	double res = 0;
+	Set test_set = random_set(size);
 	for (size_t attempt = 0; attempt < attempts; ++attempt) {
-		Set test_set = random_set(size);
 		clock_t start = clock();
 		test_set.insert(lcg());
 		clock_t end = clock();
@@ -56,8 +56,8 @@ double average_insert_time(size_t size, size_t attempts) {
 
 double average_erase_time(size_t size, size_t attempts) {
 	double res = 0;
+	Set test_set = random_set(size);
 	for (size_t attempt = 0; attempt < attempts; ++attempt) {
-		Set test_set = random_set(size);
 		clock_t start = clock();
 		test_set.erase(lcg());
 		clock_t end = clock();

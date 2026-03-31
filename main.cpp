@@ -17,29 +17,55 @@ void experiments() {
 		throw std::runtime_error("Invalid file path!");
 	}
 
-
+	
 	file << "Average fill time: (100 attempts)\n";
+	cout << "Average fill time analyzing\n";
 	file << "size = 1000: " << average_fill_time(1000, 100) << '\n';
-	file << "size = 10000: " << average_fill_time(10000, 100) << '\n';
-	file << "size = 100000: " << average_fill_time(100000, 100) << '\n';
+	cout << "size = 1000 analyzed\n";
 	file.flush();
+	file << "size = 10000: " << average_fill_time(10000, 100) << '\n';
+	cout << "size = 10000 analyzed\n";
+	file.flush();
+	file << "size = 100000: " << average_fill_time(100000, 100) << '\n';
+	cout << "size = 100000 analyzed\n";
+	file.flush();
+	
 
 	file << "Average find time: (1000 attempts)\n";
+	cout << "Average find time analyzing\n";
 	file << "size = 1000: " << average_find_time(1000, 1000) << '\n';
+	cout << "size = 1000 analyzed\n";
+	file.flush();
 	file << "size = 10000: " << average_find_time(10000, 1000) << '\n';
+	cout << "size = 10000 analyzed\n";
+	file.flush();
 	file << "size = 100000: " << average_find_time(100000, 1000) << '\n';
+	cout << "size = 100000 analyzed\n";
 	file.flush();
 
 	file << "Average insert time: (1000 attempts)\n";
+	cout << "Average insert time analyzing\n";
 	file << "size = 1000: " << average_insert_time(1000, 1000) << '\n';
+	cout << "size = 1000 analyzed\n";
+	file.flush();
 	file << "size = 10000: " << average_insert_time(10000, 1000) << '\n';
+	cout << "size = 10000 analyzed\n";
+	file.flush();
 	file << "size = 100000: " << average_insert_time(100000, 1000) << '\n';
+	cout << "size = 100000 analyzed\n";
 	file.flush();
 
 	file << "Average erase time: (1000 attempts)\n";
+	cout << "Average erase time analyzing\n";
 	file << "size = 1000: " << average_erase_time(1000, 1000) << '\n';
+	cout << "size = 1000 analyzed\n";
+	file.flush();
 	file << "size = 10000: " << average_erase_time(10000, 1000) << '\n';
+	cout << "size = 10000 analyzed\n";
+	file.flush();
 	file << "size = 100000: " << average_erase_time(100000, 1000) << '\n';
+	cout << "size = 100000 analyzed\n";
+	file.flush();
 	file.close();
 }
 

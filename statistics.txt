@@ -1,0 +1,2 @@
+Average fill time: (100 attempts)
+size = 1000: 32.66
