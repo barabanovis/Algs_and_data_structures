@@ -1,2 +1,12 @@
 Average fill time: (100 attempts)
-size = 1000: 32.66
+size = 1000: 29
+size = 10000: 3169
+size = 100000: 725612
+Average find time: (1000 attempts)
+size = 1000: 0
+size = 10000: 0
+size = 100000: 0
+Average insert time: (1000 attempts)
+size = 1000: 0
+size = 10000: 1
+size = 100000: 
