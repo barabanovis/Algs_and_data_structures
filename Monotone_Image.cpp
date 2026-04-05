@@ -1,1 +1,0 @@
-#include "Monotone_Image"
