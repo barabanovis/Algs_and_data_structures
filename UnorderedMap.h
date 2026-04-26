@@ -3,10 +3,11 @@
 
 template <typename T>
 struct Node {
+	int key;
 	T value;
 	Node<T>* next;
 
-	Node(T value, Node* next) :value(value), next(next) {};
+	Node(int key, T value, Node* next) :key(key), value(value), next(next) {};
 };
 
 template <typename T>
@@ -15,6 +16,8 @@ private:
 	Node<T>** _table;
 	size_t _size;
 	size_t _capacity;
+
+	static int hash(const T& value);
 public:
 	UnorderedMap(const size_t size);
 
@@ -22,25 +25,27 @@ public:
 	// UnorderedMap(const size_t size, const T lower)
 
 	UnorderedMap(const UnorderedMap<T>& copy);
+	//ÊÎÍÑÒĞÓÊÒÎĞ ÇÀÏÎËÍßŞÙÈÉ ÑËÓ×ÀÉÍÛÌÈ ÇÍÀ×ÅÍÈßÌÈ!!! ÄÎÏÈÑÀÒÜ!!!
 	~UnorderedMap();
 
 	UnorderedMap<T>& operator=(const UnorderedMap<T>& copy);
 	
-	// âòîğíèê
+
 	void print();
 
 	bool insert(int key, const T& value);
 	void insert_or_assign(int key, const T& value);
 
-	// ñğåäà
 	bool contains(const T& value);
 	T* search(int key);
-	// ÷åòâåğã
 	bool erase(int key);
 	int count(int key);
 };
 
-
+template<typename T>
+int UnorderedMap<T>::hash(const T& value) {
+	return value % _capacity;
+}
 
 template <typename T>
 UnorderedMap<T>::UnorderedMap(const size_t size) :_size(size), _capacity(size) {
@@ -122,4 +127,23 @@ UnorderedMap<T>& UnorderedMap<T>::operator=(const UnorderedMap<T>& copy) {
 	}
 }
 
+template <typename T>
+void UnorderedMap<T>::print() {
+	for (size_t i = 0; i < _capacity; i++) {
+		Node<T> cur;
+		if (cur = _table[i]) {
+			cout << "[ key = " << cur->key << " ], < values = ";
+			while (cur) {
+				cout << cur->value << " ";
+				cur = cur->next;
+			}
+			cout << " >\n";
+		}
+	}
+}
+
+template <typename T>
+bool UnorderedMap<T>::contains(const T& value) {
+	
+}
 #endif
