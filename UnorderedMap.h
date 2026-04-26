@@ -20,6 +20,8 @@ private:
 	size_t _capacity;
 
 	static size_t hash(const T& value);
+
+	void rehash();
 public:
 	UnorderedMap(const size_t size);
 
@@ -33,15 +35,15 @@ public:
 	UnorderedMap<T>& operator=(const UnorderedMap<T>& copy);
 	
 
-	void print();
+	void print() const;
 
 	bool insert(int key, const T& value);
 	void insert_or_assign(int key, const T& value);
 
-	bool contains(const T& value);
-	T* search(int key);
+	bool contains(const T& value) const;
+	T* search(int key) const;
 	bool erase(int key);
-	int count(int key);
+	int count(int key) const;
 };
 
 template<typename T>
@@ -129,7 +131,7 @@ UnorderedMap<T>& UnorderedMap<T>::operator=(const UnorderedMap<T>& copy) {
 }
 
 template <typename T>
-void UnorderedMap<T>::print() {
+void UnorderedMap<T>::print() const {
 	for (size_t i = 0; i < _capacity; i++) {
 		Node<T> cur = _table[i];
 		while (cur) {
@@ -140,7 +142,7 @@ void UnorderedMap<T>::print() {
 }
 
 template <typename T>
-bool UnorderedMap<T>::contains(const T& value) {
+bool UnorderedMap<T>::contains(const T& value) const {
 	// Проход по всей таблице и поиск значения черех всю неё
 	for (size_t i = 0; i < _capacity; ++i) {
 		Node<T>* ptr = _table[i];
@@ -155,7 +157,7 @@ bool UnorderedMap<T>::contains(const T& value) {
 }
 
 template <typename T>
-int UnorderedMap<T>::count(int key) {
+int UnorderedMap<T>::count(int key) const {
 	size_t pos = hash(key);
 	Node<T>* ptr = _table[pos];
 	int result = 0;
@@ -167,7 +169,7 @@ int UnorderedMap<T>::count(int key) {
 }
 
 template <typename T>
-T* UnorderedMap<T>::search(int key) {
+T* UnorderedMap<T>::search(int key) const {
 	size_t pos = hash(key);
 	Node<T>* ptr = _table[pos];
 	while (ptr) {
@@ -189,6 +191,7 @@ bool UnorderedMap<T>::erase(int key) {
 		_table[pos] = ptr->next;
 		delete ptr;
 		ptr = nullptr;
+		_size -= 1;
 		return true;
 	}
 
@@ -201,6 +204,7 @@ bool UnorderedMap<T>::erase(int key) {
 			ptr_prev->next = ptr->next;
 			delete ptr;
 			ptr = nullptr;
+			_size -= 1;
 			return true;
 		}
 		ptr = ptr->next;
@@ -210,6 +214,10 @@ bool UnorderedMap<T>::erase(int key) {
 
 template <typename T>
 bool UnorderedMap<T>::insert(int key, const T& value) {
+	if (_size == _capacity) {
+		rehash();
+	}
+
 	size_t pos = hash(key);
 	Node<T>* ptr = _table[pos];
 	// Проверим, есть ли уже такой элемент
@@ -221,19 +229,53 @@ bool UnorderedMap<T>::insert(int key, const T& value) {
 	}
 	// Если не нашлось...
 	_table[pos] = new Node(key, value, _table[pos]);
+	_size += 1;
 	return true;
 }
 
 template <typename T>
 void UnorderedMap<T>::insert_or_assign(int key, const T& value) {
+	if (_size == _capacity) {
+		rehash();
+	}
+
 	size_t pos = hash(key);
 	Node<T>* ptr = _table[pos];
 	while (ptr) {
 		if (ptr->key == key) {
 			ptr->value = value;
+			return;
 		}
 		ptr = ptr->next;
 	}
 	_table[pos] = new Node(key, value, _table[pos]);
+	_size += 1;
+}
+
+template <typename T>
+void UnorderedMap<T>::rehash() {
+	UnorderedMap<T> new_map(_capacity * 2);
+	// Проход по всем элементам таблицы подряд
+	for (size_t i = 0; i < _capacity; ++i) {
+		Node<T>* ptr = _table[i];
+		while (ptr) {
+			new_map.insert(ptr->key, ptr->value);
+			ptr = ptr->next;
+		}
+	}
+
+	// Clearing current table
+	for (size_t i = 0; i < _capacity; ++i) {
+		Node<T>* ptr = _table[i];
+		while (ptr) {
+			Node<T>* ptr_next = ptr->next;
+			delete ptr;
+			ptr = nullptr;
+			ptr = ptr_next;
+		}
+	}
+	_capacity *= 2;
+	_table = new_map._table;
+	new_map._table = nullptr;
 }
 #endif
