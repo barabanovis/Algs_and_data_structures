@@ -1,6 +1,8 @@
 #ifndef UNORDERED_MAP_H
 #define UNORDERED_MAP_H
 
+#include <random>
+
 template <typename T>
 struct Node {
 	int key;
@@ -25,11 +27,10 @@ private:
 public:
 	UnorderedMap(const int capacity);
 
-	// Заполнение СВ согласно варианту
-	// UnorderedMap(const size_t size, const T lower)
+	
+	UnorderedMap(const size_t size, const T& fill_value);
 
 	UnorderedMap(const UnorderedMap<T>& copy);
-	//КОНСТРУКТОР ЗАПОЛНЯЮЩИЙ СЛУЧАЙНЫМИ ЗНАЧЕНИЯМИ!!! ДОПИСАТЬ!!!
 	~UnorderedMap();
 
 	UnorderedMap<T>& operator=(const UnorderedMap<T>& copy);
@@ -43,8 +44,37 @@ public:
 	bool contains(const T& value) const;
 	T* search(int key) const;
 	bool erase(int key);
+
+
 	int count(int key) const;
+	int count_collisions() const;
+
+	size_t get_size() const;
+	size_t get_capacity() const;
 };
+
+template<typename T>
+UnorderedMap<T>::UnorderedMap(const size_t capacity, const T& fill_value): _size(capacity), _capacity(capacity){
+	std::random_device rd;                    // Источник энтропии
+	std::mt19937 gen(rd());                 // Генератор Mersenne Twister, инициализированный через random_device
+	std::uniform_int_distribution<int> distrib(1, 1000);  // Диапазон: [1, 100]
+
+	_table = new Node<T>*[capacity]();
+
+	for (size_t i = 0; i < capacity; i++) {
+		insert_or_assign(distrib(gen), fill_value);
+	}
+}
+
+template <typename T>
+size_t UnorderedMap<T>::get_size() const {
+	return _size;
+}
+
+template <typename T>
+size_t UnorderedMap<T>::get_capacity() const {
+	return _capacity;
+}
 
 template<typename T>
 size_t UnorderedMap<T>::hash(const int value) const{
@@ -133,11 +163,13 @@ UnorderedMap<T>& UnorderedMap<T>::operator=(const UnorderedMap<T>& copy) {
 template <typename T>
 void UnorderedMap<T>::print() const {
 	for (size_t i = 0; i < _capacity; i++) {
+		std::cout << "$ ";
 		Node<T>* cur = _table[i];
 		while (cur) {
-			std::cout << "[ key = " << cur->key << " ],\t< value = " << cur->value << " >\n";
+			std::cout << "[ " << cur->key << ", " << cur->value << " ] * ";
 			cur = cur->next;
 		}
+		std::cout << '\n';
 	}
 }
 
@@ -226,6 +258,7 @@ bool UnorderedMap<T>::insert(int key, const T& value) {
 			// Если нашлась запись с этим ключом...
 			return false;
 		}
+		ptr = ptr->next;
 	}
 	// Если не нашлось...
 	_table[pos] = new Node(key, value, _table[pos]);
@@ -250,6 +283,7 @@ void UnorderedMap<T>::insert_or_assign(int key, const T& value) {
 	}
 	_table[pos] = new Node(key, value, _table[pos]);
 	_size += 1;
+	return;
 }
 
 template <typename T>
@@ -265,18 +299,31 @@ void UnorderedMap<T>::rehash() {
 	}
 
 	// Clearing current table
-	for (size_t i = 0; i < _capacity; ++i) {
-		Node<T>* ptr = _table[i];
-		while (ptr) {
-			Node<T>* ptr_next = ptr->next;
-			delete ptr;
-			ptr = nullptr;
-			ptr = ptr_next;
-		}
-	}
-	_capacity *= 2;
 	delete[] _table;
+	_table = nullptr;
+
+	_capacity *= 2;
 	_table = new_map._table;
 	new_map._table = nullptr;
+	new_map._capacity = 0;
+}
+
+template <typename T>
+int UnorderedMap<T>::count_collisions() const {
+	int res = 0;
+	for (size_t i = 0; i < _capacity; ++i) {
+		Node<T>* ptr = _table[i];
+		bool first_flag = false;
+		while (ptr) {
+			if (!first_flag) {
+				first_flag = true;
+			}
+			else {
+				res += 1;
+			}
+			ptr = ptr->next;
+		}
+	}
+	return res;
 }
 #endif
