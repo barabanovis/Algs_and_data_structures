@@ -1,3 +1,5 @@
+# Лабораторная работа №2 [Вариант 4]
+
 # Общая информация по предмету
 
 - [Ведомость](https://docs.google.com/spreadsheets/d/1p-dXrUaurP3YO4wVJEtuLHVE1OQbcSOlwukNYi67tgU)
