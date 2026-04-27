@@ -23,7 +23,7 @@ private:
 
 	void rehash();
 public:
-	UnorderedMap(const int size);
+	UnorderedMap(const int capacity);
 
 	// Заполнение СВ согласно варианту
 	// UnorderedMap(const size_t size, const T lower)
@@ -52,7 +52,7 @@ size_t UnorderedMap<T>::hash(const int value) const{
 }
 
 template <typename T>
-UnorderedMap<T>::UnorderedMap(const int size) :_size(size), _capacity(size+20) {
+UnorderedMap<T>::UnorderedMap(const int capacity) :_size(0), _capacity(capacity) {
 	_table = new Node<T>*[_capacity]();
 }
 
@@ -135,7 +135,7 @@ void UnorderedMap<T>::print() const {
 	for (size_t i = 0; i < _capacity; i++) {
 		Node<T>* cur = _table[i];
 		while (cur) {
-			std::cout << "[ key = " << cur->key << " ], < value = " << cur->value << " >\n";
+			std::cout << "[ key = " << cur->key << " ],\t< value = " << cur->value << " >\n";
 			cur = cur->next;
 		}
 	}
