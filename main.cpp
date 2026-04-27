@@ -5,4 +5,5 @@ using namespace std;
 
 int main() {
 	UnorderedMap<int> mymap(88);
+	mymap.print();
 }

@@ -19,11 +19,11 @@ private:
 	size_t _size;
 	size_t _capacity;
 
-	static size_t hash(const T& value);
+	size_t hash(const int value) const;
 
 	void rehash();
 public:
-	UnorderedMap(const size_t size);
+	UnorderedMap(const int size);
 
 	// Заполнение СВ согласно варианту
 	// UnorderedMap(const size_t size, const T lower)
@@ -47,13 +47,13 @@ public:
 };
 
 template<typename T>
-size_t UnorderedMap<T>::hash(const T& value) {
+size_t UnorderedMap<T>::hash(const int value) const{
 	return value % _capacity;
 }
 
 template <typename T>
-UnorderedMap<T>::UnorderedMap(const size_t size) :_size(size), _capacity(size) {
-	_table = new Node<T>*[size]();
+UnorderedMap<T>::UnorderedMap(const int size) :_size(size), _capacity(size+20) {
+	_table = new Node<T>*[_capacity]();
 }
 
 template <typename T>
@@ -124,7 +124,7 @@ UnorderedMap<T>& UnorderedMap<T>::operator=(const UnorderedMap<T>& copy) {
 		Node<T>* ptr_copy = copy._table[i]->next;
 
 		while (ptr_copy) {
-			ptr_table->next = new Node<T>(ptr_copy->value, nullptr);
+			ptr_table->next = new Node<T>(ptr_copy->key, ptr_copy->value, nullptr);
 			ptr_copy = ptr_copy->next;
 		}
 	}
@@ -133,9 +133,9 @@ UnorderedMap<T>& UnorderedMap<T>::operator=(const UnorderedMap<T>& copy) {
 template <typename T>
 void UnorderedMap<T>::print() const {
 	for (size_t i = 0; i < _capacity; i++) {
-		Node<T> cur = _table[i];
+		Node<T>* cur = _table[i];
 		while (cur) {
-			cout << "[ key = " << cur->key << " ], < value = " << cur->value << " >\n";
+			std::cout << "[ key = " << cur->key << " ], < value = " << cur->value << " >\n";
 			cur = cur->next;
 		}
 	}
@@ -173,8 +173,8 @@ T* UnorderedMap<T>::search(int key) const {
 	size_t pos = hash(key);
 	Node<T>* ptr = _table[pos];
 	while (ptr) {
-		if (ptr->key == key && ptr->value == value) {
-			return ptr->value
+		if (ptr->key == key) {
+			return &ptr->value;
 		}
 		ptr = ptr->next;
 	}
@@ -275,6 +275,7 @@ void UnorderedMap<T>::rehash() {
 		}
 	}
 	_capacity *= 2;
+	delete[] _table;
 	_table = new_map._table;
 	new_map._table = nullptr;
 }
