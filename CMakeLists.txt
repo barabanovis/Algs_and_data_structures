@@ -7,7 +7,7 @@ project("lab2_Aisd" CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_executable("lab2_Aisd" "main.cpp" "UnorderedMap.h" "fileworking.h" "fileworking.cpp" "experiment.h" "experimint.cpp")
+add_executable("lab2_Aisd" "code/main.cpp" "code/UnorderedMap.h" "code/fileworking.h" "code/fileworking.cpp"  )
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang" OR
    CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR

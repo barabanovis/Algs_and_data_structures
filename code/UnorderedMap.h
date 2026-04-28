@@ -2,6 +2,7 @@
 #define UNORDERED_MAP_H
 
 #include <random>
+#include <iostream>
 
 template <typename T>
 struct Node {
@@ -28,7 +29,7 @@ public:
 	UnorderedMap(const int capacity);
 
 	
-	UnorderedMap(const size_t size, const T& fill_value);
+	UnorderedMap(const size_t capacity, const size_t fill_count, const T& fill_value);
 
 	UnorderedMap(const UnorderedMap<T>& copy);
 	~UnorderedMap();
@@ -54,15 +55,31 @@ public:
 };
 
 template<typename T>
-UnorderedMap<T>::UnorderedMap(const size_t capacity, const T& fill_value): _size(capacity), _capacity(capacity){
+UnorderedMap<T>::UnorderedMap(const size_t capacity, const size_t fill_count, const T& fill_value): _size(capacity), _capacity(capacity){
 	std::random_device rd;                    // Источник энтропии
 	std::mt19937 gen(rd());                 // Генератор Mersenne Twister, инициализированный через random_device
-	std::uniform_int_distribution<int> distrib(1, 1000);  // Диапазон: [1, 100]
+	std::uniform_int_distribution<int> distrib(1, 1000);  
 
 	_table = new Node<T>*[capacity]();
 
-	for (size_t i = 0; i < capacity; i++) {
+	for (size_t i = 0; i < fill_count; i++) {
 		insert_or_assign(distrib(gen), fill_value);
+	}
+}
+
+template <>
+UnorderedMap<float>::UnorderedMap(const size_t capacity, const size_t fill_count, const float& fill_max_abs): _size(capacity), _capacity(capacity) {
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	
+	
+	std::uniform_int_distribution<int> int_distrib(1, 1000);  
+	std::uniform_real_distribution<float> float_distrib(-fill_max_abs, fill_max_abs);
+
+	_table = new Node<float>*[capacity]();
+
+	for (size_t i = 0; i < fill_count; i++) {
+		insert_or_assign(int_distrib(gen), float_distrib(gen));
 	}
 }
 
