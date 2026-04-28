@@ -26,4 +26,5 @@ bool create_file_with_directory(const std::string& filepath);
 bool write_exp_results(Experiment exp, const std::string& filepath);
 
 bool write_probability(const int table_cap, const double p, const std::string& filepath);
+
 #endif

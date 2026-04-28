@@ -1,5 +1,6 @@
-#include "UnorderedMap.h"
 #include "fileworking.h"
+#include "UnorderedMap.h"
+
 using namespace std;
 
 namespace fs = std::filesystem;
@@ -22,7 +23,7 @@ bool create_file_with_directory(const std::string& filepath) {
             return false;
         }
         file.close();
-        std::cout << "װאיכ סמחהאם: " << filepath << std::endl;
+        std::cout << "File created: " << filepath << std::endl;
         return true;
     }
     catch (const fs::filesystem_error& ex) {
