@@ -99,7 +99,7 @@ def plot_probability_vs_capacity(
     ax.set_xlabel('Ёмкость таблицы', fontsize=12, fontweight='bold')
     ax.set_ylabel('Вероятность хотя бы одной коллизии',
                   fontsize=12, fontweight='bold')
-    ax.set_title('Зависимость P(0 collisions) от размера таблицы',
+    ax.set_title('Зависимость P(хотя бы одна коллизия) от размера таблицы',
                  fontsize=14, fontweight='bold', pad=20)
 
     # Форматирование оси Y в процентах

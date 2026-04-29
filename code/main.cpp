@@ -4,13 +4,7 @@
 using namespace std;
 
 
-// Placeholder for class demonstration. Replace with your actual demo code.
-void run_class_demo() {
-    cout << "\n Hash table class demonstration:\n";
-    cout << "Creating random hash table and printing it\n";
-    UnorderedMap<float> my_map1(10, 8, -6);
-    my_map1.print();
-}
+
 
 int main() {
     while (true) {
