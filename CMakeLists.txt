@@ -7,7 +7,7 @@ project("lab3_Aisd" CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_executable("lab3_Aisd" "main.cpp" "Graph.h")
+add_executable("lab3_Aisd" "main.cpp" "libs/Graph.h" "libs/UnorderedMap.h")
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang" OR
    CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR
