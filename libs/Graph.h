@@ -30,7 +30,7 @@ public:
 		Edge(const Vertex& from, const Vertex& to, const Distance dist) :from(from), to(to), dist(dist) {};
 	};
 private:
-	std::vector<std::shared_ptr<Vertex>> _vertices;
+	std::vector<Vertex> _vertices;
 
 	UnorderedMap<Vertex, std::list<Edge>> _graph_table;
 
@@ -97,15 +97,11 @@ Graph<Vertex, Distance>::Graph(const Graph& other)
 	// Резервируем память для вершин
 	_vertices.reserve(other._vertices.size());
 
-	// Копируем вершины
-	for (const auto& v_ptr : other._vertices) {
-		std::shared_ptr<Vertex> new_ptr = std::make_shared<Vertex>(*v_ptr);
-		_vertices.push_back(new_ptr);
-	}
+	_vertices = other._vertices;
 
 	// Копируем ребра
-	for (const auto& v_ptr : other._vertices) {
-		const Vertex& vertex = *v_ptr;
+	for (const auto& vert : other._vertices) {
+		const Vertex& vertex = vert;
 		auto edges_list = other._graph_table.search(vertex);
 
 		if (edges_list && !edges_list->empty()) {
@@ -132,14 +128,11 @@ Graph<Vertex, Distance>& Graph<Vertex, Distance>::operator=(const Graph& other) 
 	_vertices.reserve(other._vertices.size());
 
 	// Копируем вершины
-	for (const auto& v_ptr : other._vertices) {
-		std::shared_ptr<Vertex> new_ptr = std::make_shared<Vertex>(*v_ptr);
-		_vertices.push_back(new_ptr);
-	}
+	_vertices = other._vertices;
 
 	// Копируем ребра
-	for (const auto& v_ptr : other._vertices) {
-		const Vertex& vertex = *v_ptr;
+	for (const auto& vert : other._vertices) {
+		const Vertex& vertex = vert;
 		auto edges_list = other._graph_table.search(vertex);
 
 		if (edges_list && !edges_list->empty()) {
@@ -167,18 +160,13 @@ bool Graph<Vertex, Distance>::add_vertex(const Vertex& v) {
 	if (has_vertex(v)) {
 		return false;
 	}
-	std::shared_ptr<Vertex> ptr = std::make_shared<Vertex>(v);
-	_vertices.push_back(ptr);
+	_vertices.push_back(v);
 	return _graph_table.insert(v, std::list<Edge>());
 }
 
 template <typename Vertex, typename Distance>
 std::vector<Vertex> Graph<Vertex, Distance>::vertices() const{
-	std::vector<Vertex> result(0);
-	for (auto u : _vertices) {
-		result.push_back(*u);
-	}
-	return result;
+	return _vertices;
 }
 
 
@@ -297,7 +285,7 @@ void Graph<Vertex, Distance>::print(std::ostream& os) const {
 
 	// Вывод всех вершин с их ребрами
 	for (size_t i = 0; i < _vertices.size(); ++i) {
-		const Vertex& vertex = *_vertices[i];
+		const Vertex& vertex = _vertices[i];
 		auto edges = _graph_table.search(vertex);
 
 		// Вывод текущей вершины
@@ -322,7 +310,7 @@ void Graph<Vertex, Distance>::print(std::ostream& os) const {
 	// Подсчет общего количества ребер
 	size_t total_edges = 0;
 	for (const auto& v : _vertices) {
-		auto edges = _graph_table.search(*v);
+		auto edges = _graph_table.search(v);
 		if (edges) {
 			total_edges += edges->size();
 		}
@@ -400,7 +388,7 @@ bool Graph<Vertex, Distance>::remove_vertex(const Vertex& v) {
 
 	// Удаляем все ребра, где v участвует как from или to
 	for (auto vertex : _vertices) {
-		std::list<Edge>* list_ptr = _graph_table.search(*vertex);
+		std::list<Edge>* list_ptr = _graph_table.search(vertex);
 		if (list_ptr) {
 			// Используем remove_if для удаления рёбер с участием v
 			list_ptr->remove_if([&v](const Edge& edge) {
@@ -430,7 +418,7 @@ std::vector<Vertex> Graph<Vertex, Distance>::walk(const Vertex start_vertex, std
 	UnorderedMap<Vertex, int> color;
 	
 	for (const auto& u : _vertices) {
-		color.insert_or_assign(*u, 1);
+		color.insert_or_assign(u, 1);
 	}
 
 	dfs(start_vertex,walk_order, color, action);
@@ -461,7 +449,7 @@ bool Graph<Vertex, Distance>::is_connected() const { //является ли граф сильносв
 	// Иное определение сильносвязного графа:
 	// Граф сильнсвязный, если из каждой вершины этого графа можно прийти во все остальные
 	for (auto u : _vertices) {
-		std::vector<Vertex> walk_vect = walk(*u, [](Vertex v) {;});
+		std::vector<Vertex> walk_vect = walk(u, [](Vertex v) {;});
 		if (walk_vect.size() != order()) {
 			return false;
 		}
@@ -496,7 +484,7 @@ void Graph<Vertex, Distance>::deikstra_alg(const Vertex& from, UnorderedMap<Vert
 
 	// Непосредственно сам алгоритм Дейкстры
 	for (auto u : _vertices) {
-		dist_from_start.insert_or_assign(*u, std::numeric_limits<Distance>::max());
+		dist_from_start.insert_or_assign(u, std::numeric_limits<Distance>::max());
 	}
 	dist_from_start.insert_or_assign(from, 0);
 
@@ -563,7 +551,7 @@ void Graph<Vertex, Distance>::export_to_csv(const std::string& filename, bool in
 		file << "# Vertices\n";
 		file << "vertex\n";
 		for (const auto& v : _vertices) {
-			file << *v << "\n";
+			file << v << "\n";
 		}
 		file << "\n";
 	}
@@ -573,7 +561,7 @@ void Graph<Vertex, Distance>::export_to_csv(const std::string& filename, bool in
 	file << "source,target,weight\n";
 
 	for (const auto& v : _vertices) {
-		auto edges_list = _graph_table.search(*v);
+		auto edges_list = _graph_table.search(v);
 		if (edges_list) {
 			for (const auto& edge : *edges_list) {
 				file << edge.from << "," << edge.to << "," << edge.dist << "\n";
