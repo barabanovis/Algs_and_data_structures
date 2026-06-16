@@ -15,6 +15,8 @@
 #include <memory>
 #include <algorithm>
 #include <functional>
+#include <fstream>
+#include <filesystem>
 #include "libs/UnorderedMap.h"
 
 template<typename Vertex = int, typename Distance = double>
@@ -35,9 +37,16 @@ private:
 
 	void dfs(const Vertex& start_vertex, std::vector<Vertex>& walk_order, UnorderedMap<Vertex, int>& color, std::function<void(const Vertex&)>& action) const;
 	void edge_relaxation(const Edge& edge, UnorderedMap<Vertex, Distance>& dist_from_start, UnorderedMap<Vertex, Vertex>& prev_vertex) const;
+	std::vector<Edge> path_reconstruction(const Vertex& from, const Vertex& to, UnorderedMap<Vertex, Distance>& dist_from_start, UnorderedMap<Vertex, Vertex>& prev_vertex) const;
+
+	size_t _negative_edges_num = 0;
 public:
 	
 	Graph();
+	// Добавьте в публичную секцию:
+	Graph(const Graph& other);
+	Graph& operator=(const Graph& other);
+
 
 	//проверка-добавление-удаление вершин
 	bool has_vertex(const Vertex& v) const;
@@ -65,8 +74,11 @@ public:
 	//с помощью алгоритма Дейкстры для графов с неотрицательными весами рёбер
 
 	std::vector<Vertex> walk(const Vertex start_vertex, std::function<void(const Vertex&)> action)const; //обход
-	void print(std::ostream& os) const;
+	void deikstra_alg(const Vertex& from, UnorderedMap<Vertex, Distance>& dist_from_start, UnorderedMap<Vertex, Vertex>& prev_vertex) const;
 
+	
+	void print(std::ostream& os) const;
+	void export_to_csv(const std::string& filename, bool include_vertices = true) const;
 
 	// Сделайте красивую визуализацию графа с помощью LLM. 
 	// Можете красивый вывод в консоле сделать, можете сохранять как картинки. 
@@ -75,6 +87,75 @@ public:
 
 template <typename Vertex, typename Distance>
 Graph<Vertex, Distance>::Graph() :_vertices(), _graph_table(10) {};
+
+// Реализация:
+
+template<typename Vertex, typename Distance>
+Graph<Vertex, Distance>::Graph(const Graph& other)
+	: _vertices(), _graph_table(10), _negative_edges_num(other._negative_edges_num) {
+
+	// Резервируем память для вершин
+	_vertices.reserve(other._vertices.size());
+
+	// Копируем вершины
+	for (const auto& v_ptr : other._vertices) {
+		std::shared_ptr<Vertex> new_ptr = std::make_shared<Vertex>(*v_ptr);
+		_vertices.push_back(new_ptr);
+	}
+
+	// Копируем ребра
+	for (const auto& v_ptr : other._vertices) {
+		const Vertex& vertex = *v_ptr;
+		auto edges_list = other._graph_table.search(vertex);
+
+		if (edges_list && !edges_list->empty()) {
+			std::list<Edge> new_list;
+			for (const auto& edge : *edges_list) {
+				new_list.push_back(edge);
+			}
+			_graph_table.insert(vertex, new_list);
+		}
+	}
+}
+
+template<typename Vertex, typename Distance>
+Graph<Vertex, Distance>& Graph<Vertex, Distance>::operator=(const Graph& other) {
+	if (this == &other) {
+		return *this; // Защита от самоприсваивания
+	}
+
+	// Очищаем текущий граф
+	_vertices.clear();
+	_negative_edges_num = 0;
+
+	// Резервируем память для вершин
+	_vertices.reserve(other._vertices.size());
+
+	// Копируем вершины
+	for (const auto& v_ptr : other._vertices) {
+		std::shared_ptr<Vertex> new_ptr = std::make_shared<Vertex>(*v_ptr);
+		_vertices.push_back(new_ptr);
+	}
+
+	// Копируем ребра
+	for (const auto& v_ptr : other._vertices) {
+		const Vertex& vertex = *v_ptr;
+		auto edges_list = other._graph_table.search(vertex);
+
+		if (edges_list && !edges_list->empty()) {
+			std::list<Edge> new_list;
+			for (const auto& edge : *edges_list) {
+				new_list.push_back(edge);
+			}
+			_graph_table.insert(vertex, new_list);
+		}
+	}
+
+	_negative_edges_num = other._negative_edges_num;
+
+	return *this;
+}
+
 
 template <typename Vertex, typename Distance>
 bool Graph<Vertex, Distance>::has_vertex(const Vertex& v) const {
@@ -114,6 +195,11 @@ void Graph<Vertex, Distance>::add_edge(const Vertex& from, const Vertex& to, con
 	Edge new_edge(from, to, d);
 	std::list<Edge>* list_to_push = _graph_table.search(from);
 	list_to_push->push_back(new_edge);
+
+	if (d < 0) {
+		_negative_edges_num++;
+	}
+
 	return;
 }
 
@@ -134,12 +220,27 @@ bool Graph<Vertex, Distance>::remove_edge(const Vertex& from, const Vertex& to) 
 	if (!list_ptr) {
 		return false;
 	}
+
+	size_t deleted_negative_edges = 0;
+
 	// Используем const Edge& чтобы избежать копирования
 	size_t old_size = list_ptr->size();
-	list_ptr->remove_if([&to](const Edge& e) {
-		return e.to == to;
+	list_ptr->remove_if([&to, &deleted_negative_edges](const Edge& e) {
+		if (e.to == to) {
+			if (e.dist < 0) {
+				deleted_negative_edges++;
+			}
+			return true;
+		}
+		return false;
 		});
-	return old_size != list_ptr->size();
+
+	if (old_size != list_ptr->size()) {
+		_negative_edges_num -= deleted_negative_edges;
+		return true;
+	}
+
+	return false;
 }
 
 template<typename Vertex, typename Distance>
@@ -158,12 +259,25 @@ bool Graph<Vertex, Distance>::remove_edge(const Edge& edge) {
 	if (!list_ptr) {
 		return false;
 	}
+	size_t deleted_negative_edges = 0;
 	// Используем const Edge& чтобы избежать копирования
 	size_t old_size = list_ptr->size();
-	list_ptr->remove_if([&edge](const Edge& e) {
-		return (e.to == edge.to) && (e.dist == edge.dist);
+	list_ptr->remove_if([&edge, &deleted_negative_edges](const Edge& e) {
+		if (e.to == edge.to && e.dist == edge.dist) {
+			if (e.dist < 0) {
+				deleted_negative_edges++;
+			}
+			return true;
+		}
+		return false;
 		});
-	return old_size != list_ptr->size();
+
+	if (old_size != list_ptr->size()) {
+		_negative_edges_num -= deleted_negative_edges;
+		return true;
+	}
+
+	return false;
 }
 
 
@@ -358,16 +472,7 @@ bool Graph<Vertex, Distance>::is_connected() const { //является ли граф сильносв
 
 template<typename Vertex, typename Distance>
 bool Graph<Vertex, Distance>::is_valid_for_deikstra() const {
-	// обход вообще всех рёбер
-	for (auto u : _vertices) {
-		std::list<Edge>* list_ptr = _graph_table.search(*u);
-		for (auto edge : *list_ptr) {
-			if (edge.dist < 0) {
-				return false;
-			}
-		}
-	}
-	return true;
+	return !_negative_edges_num;
 }
 
 template<typename Vertex, typename Distance>
@@ -380,8 +485,9 @@ void Graph<Vertex, Distance>::edge_relaxation(const Edge& edge, UnorderedMap<Ver
 	}
 }
 
+
 template<typename Vertex, typename Distance>
-std::vector<typename Graph<Vertex, Distance>::Edge> Graph<Vertex, Distance>::shortest_path(const Vertex& from, const Vertex& to) const {
+void Graph<Vertex, Distance>::deikstra_alg(const Vertex& from, UnorderedMap<Vertex, Distance>& dist_from_start, UnorderedMap<Vertex, Vertex>& prev_vertex) const {
 	// проверка графа на неотрицательный вес рёбер
 
 	if (!is_valid_for_deikstra()) {
@@ -389,21 +495,19 @@ std::vector<typename Graph<Vertex, Distance>::Edge> Graph<Vertex, Distance>::sho
 	}
 
 	// Непосредственно сам алгоритм Дейкстры
-	UnorderedMap<Vertex, Distance> dist_from_start;
 	for (auto u : _vertices) {
 		dist_from_start.insert_or_assign(*u, std::numeric_limits<Distance>::max());
 	}
 	dist_from_start.insert_or_assign(from, 0);
 
-	UnorderedMap<Vertex, Vertex> prev_vertex;
 
-	
+
 
 	std::vector<Vertex> unvisited = vertices();
 
 	auto comparator = [&dist_from_start](Vertex a, Vertex b) {
 		return (*dist_from_start.search(b)) < (*dist_from_start.search(a));
-			};
+		};
 
 	std::priority_queue<Vertex, std::vector<Vertex>, decltype(comparator)> queue(comparator, unvisited);
 	while (!queue.empty()) {
@@ -417,9 +521,11 @@ std::vector<typename Graph<Vertex, Distance>::Edge> Graph<Vertex, Distance>::sho
 
 		queue.pop();
 	}
+}
 
-	//*******************************************************************************
-	// Восстановление маршрута при помощи таблицы prev_vertex -- движемся обратным ходом
+
+template<typename Vertex, typename Distance>
+std::vector<typename Graph<Vertex, Distance>::Edge> Graph<Vertex, Distance>::path_reconstruction(const Vertex& from, const Vertex& to, UnorderedMap<Vertex, Distance>& dist_from_start, UnorderedMap<Vertex, Vertex>& prev_vertex) const {
 	std::vector<Edge> inv_way;
 	Vertex cur_vertex = to;
 	while (cur_vertex != from) {
@@ -433,5 +539,48 @@ std::vector<typename Graph<Vertex, Distance>::Edge> Graph<Vertex, Distance>::sho
 	}
 	std::reverse(inv_way.begin(), inv_way.end());
 	return inv_way;
+}
+
+template<typename Vertex, typename Distance>
+std::vector<typename Graph<Vertex, Distance>::Edge> Graph<Vertex, Distance>::shortest_path(const Vertex& from, const Vertex& to) const {
+	UnorderedMap<Vertex, Distance> dist_from_start;
+	UnorderedMap<Vertex, Vertex> prev_vertex;
+	deikstra_alg(from, dist_from_start, prev_vertex);
+
+	//*******************************************************************************
+	return path_reconstruction(from, to, dist_from_start, prev_vertex);
+}
+
+template<typename Vertex, typename Distance>
+void Graph<Vertex, Distance>::export_to_csv(const std::string& filename, bool include_vertices) const {
+	std::ofstream file(filename);
+	if (!file.is_open()) {
+		throw std::runtime_error("Cannot open file: " + filename);
+	}
+
+	// Если нужно экспортировать вершины
+	if (include_vertices) {
+		file << "# Vertices\n";
+		file << "vertex\n";
+		for (const auto& v : _vertices) {
+			file << *v << "\n";
+		}
+		file << "\n";
+	}
+
+	// Экспорт ребер
+	file << "# Edges (source,target,weight)\n";
+	file << "source,target,weight\n";
+
+	for (const auto& v : _vertices) {
+		auto edges_list = _graph_table.search(*v);
+		if (edges_list) {
+			for (const auto& edge : *edges_list) {
+				file << edge.from << "," << edge.to << "," << edge.dist << "\n";
+			}
+		}
+	}
+
+	file.close();
 }
 #endif
