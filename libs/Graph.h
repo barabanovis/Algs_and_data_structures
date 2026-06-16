@@ -11,6 +11,7 @@
 
 #include <iostream>
 #include <vector>
+#include <queue>
 #include <memory>
 #include <algorithm>
 #include <functional>
@@ -33,7 +34,7 @@ private:
 
 
 	void dfs(const Vertex& start_vertex, std::vector<Vertex>& walk_order, UnorderedMap<Vertex, int>& color, std::function<void(const Vertex&)>& action) const;
-	void edge_relaxation(const Edge& edge, UnorderedMap<Vertex, Distance>& dist_from_start) const;
+	void edge_relaxation(const Edge& edge, UnorderedMap<Vertex, Distance>& dist_from_start, UnorderedMap<Vertex, Vertex>& prev_vertex) const;
 public:
 	
 	Graph();
@@ -370,11 +371,12 @@ bool Graph<Vertex, Distance>::is_valid_for_deikstra() const {
 }
 
 template<typename Vertex, typename Distance>
-void Graph<Vertex, Distance>::edge_relaxation(const Edge& edge, UnorderedMap<Vertex, Distance>& dist_from_start) const {
-	Distance d_u = *dist_from_start.search(edge.from);
-	Distance d_v = *dist_from_start.search(edge.to);
-	if (d_v > d_u + edge.dist) {
-		dist_from_start.insert_or_assign(edge.to, d_u + edge.dist);
+void Graph<Vertex, Distance>::edge_relaxation(const Edge& edge, UnorderedMap<Vertex, Distance>& dist_from_start, UnorderedMap<Vertex, Vertex>& prev_vertex) const {
+	Distance d_from = *dist_from_start.search(edge.from);
+	Distance d_to = *dist_from_start.search(edge.to);
+	if (d_to > d_from + edge.dist) {
+		dist_from_start.insert_or_assign(edge.to, d_from + edge.dist);
+		prev_vertex.insert_or_assign(edge.to, edge.from);
 	}
 }
 
@@ -386,6 +388,7 @@ std::vector<typename Graph<Vertex, Distance>::Edge> Graph<Vertex, Distance>::sho
 		throw std::invalid_argument("Graph has a edge with negative distance!");
 	}
 
+	// Непосредственно сам алгоритм Дейкстры
 	UnorderedMap<Vertex, Distance> dist_from_start;
 	for (auto u : _vertices) {
 		dist_from_start.insert_or_assign(*u, std::numeric_limits<Distance>::max());
@@ -394,25 +397,41 @@ std::vector<typename Graph<Vertex, Distance>::Edge> Graph<Vertex, Distance>::sho
 
 	UnorderedMap<Vertex, Vertex> prev_vertex;
 
+	
+
 	std::vector<Vertex> unvisited = vertices();
 
-	while (!unvisited.empty()) {
-		// Извлекаем вершину с минимальной оценкой расстояния
-		Vertex u = unvisited[0];
-		for (auto vert : unvisited) {
-			if (*dist_from_start.search(vert) < *dist_from_start.search(u)) {
-				u = vert;
-			}
-		}
-		unvisited.erase(std::remove(unvisited.begin(), unvisited.end(), u), unvisited.end());
+	auto comparator = [&dist_from_start](Vertex a, Vertex b) {
+		return (*dist_from_start.search(b)) < (*dist_from_start.search(a));
+			};
 
+	std::priority_queue<Vertex, std::vector<Vertex>, decltype(comparator)> queue(comparator, unvisited);
+	while (!queue.empty()) {
+		// Извлекаем вершину с минимальной оценкой расстояния
+		Vertex u = queue.top();
 
 		// теперь u есть вершина с минимальной оценкой пути
 		for (const Edge& edge : edges(u)) {
-			edge_relaxation(edge, dist_from_start);
+			edge_relaxation(edge, dist_from_start, prev_vertex);
 		}
 
-
+		queue.pop();
 	}
+
+	//*******************************************************************************
+	// Восстановление маршрута при помощи таблицы prev_vertex -- движемся обратным ходом
+	std::vector<Edge> inv_way;
+	Vertex cur_vertex = to;
+	while (cur_vertex != from) {
+		Vertex prev_vert = *prev_vertex.search(cur_vertex);
+
+		Distance edge_dist = *dist_from_start.search(cur_vertex) - *dist_from_start.search(prev_vert);
+		Edge add_edge(prev_vert, cur_vertex, edge_dist);
+		inv_way.push_back(add_edge);
+		// Переход на предыдущую вершину
+		cur_vertex = prev_vert;
+	}
+	std::reverse(inv_way.begin(), inv_way.end());
+	return inv_way;
 }
 #endif
