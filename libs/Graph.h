@@ -329,8 +329,16 @@ size_t Graph<Vertex, Distance>::degree(const Vertex& v) const { //степень вершин
 		throw std::invalid_argument("This vertex does not exist!");
 	}
 
-	std::list<Edge>* list_ptr = _graph_table.search(v);
-	return list_ptr->size();
+	size_t result = 0;
+	for (auto vert : _vertices) {
+		std::list<Edge>* list_ptr = _graph_table.search(vert);
+		for (auto edge : *list_ptr) {
+			if (edge.from == v || edge.to == v) {
+				result++;
+			}
+		}
+	}
+	return result;
 }
 
 template<typename Vertex, typename Distance>

@@ -31,6 +31,7 @@ void demonstrateGraph(Graph<Vertex, Distance>& graph) {
     for (auto u : path) {
         cout << u.from << " " << u.to << ' ' << u.dist << '\n';
     }
+    cout << "Degree of p: " << graph.degree("p") << '\n';
     // Example: Graph g; g.print();
     std::cout << "[End] Demonstration successfully completed.\n";
 }
@@ -64,13 +65,6 @@ void find_warehouse(Graph<Vertex, Distance>& graph) {
 
     cout << "Warehouse must be placed in vertex: " << ans_vertex << '\n';
     cout << "Average distance: " << ans_aver << '\n';
-}
-
-template <typename Vertex, typename Distance>
-void solveTask(Graph<Vertex, Distance> graph) {
-    std::cout << "\n[Start] Solving task according to variant...\n";
-    find_warehouse(graph);
-    std::cout << "[End] Task solved.\n";
 }
 
 Graph<string, double> my_graph() {
@@ -108,6 +102,15 @@ Graph<string, double> my_graph() {
     graph.print(cout);
     return graph;
 }
+
+template <typename Vertex, typename Distance>
+void solveTask(Graph<Vertex, Distance> graph) {
+    std::cout << "\n[Start] Solving task according to variant...\n";
+    find_warehouse(graph);
+    std::cout << "[End] Task solved.\n";
+}
+
+
 
 Graph<string, double> my_graph2() {
     Graph<string, double> graph;
